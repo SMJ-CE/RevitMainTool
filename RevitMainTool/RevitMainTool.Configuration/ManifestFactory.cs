@@ -17,7 +17,7 @@ namespace RevitMainTool.Configuration
                 $"{directory}\\RevitMainTool.dll",
                new Guid("608681DE-D20E-4CAC-B706-9756A59A4B7F"),
                 "RevitMainTool.App",
-                "Eivind Vørmadal");
+                "SMJ Addin Creator");
 
             manifest.AddInApplications.Add(application);
 
