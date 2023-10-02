@@ -13,6 +13,43 @@ namespace RevitMainTool
 {
     public static class GeneralMethods
     {
+        public static void GetClosestGridLines(Element element)
+        {
+            Document doc = element.Document;
+            View view = doc.ActiveView;
+
+            var grids = new FilteredElementCollector(doc, view.Id).OfCategory(BuiltInCategory.OST_Grids).Cast<Grid>();
+
+            List<Grid> horizontalGrids = grids.Where(x => (x.Curve as Line).Direction.X == 1 || (x.Curve as Line).Direction.X == -1).ToList();
+            List<Grid> verticalGrids = grids.Where(x => (x.Curve as Line).Direction.Y == 1 || (x.Curve as Line).Direction.Y == -1).ToList();
+
+            XYZ elementPoint;
+            var elementLocation = element.Location;
+
+            if(elementLocation is LocationPoint locPoint)
+            {
+                elementPoint = locPoint.Point;
+            }
+            else if(elementLocation is LocationCurve locCurve)
+            {
+                XYZ start = locCurve.Curve.GetEndPoint(0);
+                XYZ end = locCurve.Curve.GetEndPoint(1);
+
+                elementPoint = start.Add(end.Subtract(start));
+            }
+            else
+            {
+                return;
+            }
+
+
+
+
+
+            
+        }
+
+
 
         public static ICollection<Element> GetSimilarInstances(Element instance)
         {

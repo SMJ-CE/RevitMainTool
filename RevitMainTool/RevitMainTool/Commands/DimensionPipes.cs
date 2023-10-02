@@ -10,14 +10,13 @@ using System.Diagnostics;
 using System.Linq;
 using Autodesk.Revit.DB.Architecture;
 using System.Reflection.Emit;
-using RevitMainTool.Methods;
 
 #endregion
 
 namespace RevitMainTool
 {
     [Transaction(TransactionMode.Manual)]
-    public class Tester : IExternalCommand
+    public class DimensionPipes : IExternalCommand
     {
         public Result Execute(
           ExternalCommandData commandData,
@@ -30,13 +29,14 @@ namespace RevitMainTool
             var doc = uidoc.Document;
 
             var sel = uidoc.Selection;
-            var ele = doc.GetElement(sel.GetElementIds().First());
+            var eleIds = sel.GetElementIds();
 
             using (var tx = new TransactionGroup(doc))
             {
                 tx.Start("Tagging all similar");
 
-                PipeMethods.GetPipesThatCutView(uidoc, ele);
+
+
 
                 tx.Assimilate();
             }
