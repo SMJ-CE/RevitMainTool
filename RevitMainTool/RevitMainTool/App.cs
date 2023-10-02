@@ -17,15 +17,58 @@ namespace RevitMainTool
         public Result OnStartup(UIControlledApplication application)
         {
             // Create a custom ribbon tab
-            var tabName = "RevitMainTool";
+            var tabName = "SMJMainTool";
             application.CreateRibbonTab(tabName);
 
-            // Add a new ribbon panel
-            RibbonPanel panel = application.CreateRibbonPanel(tabName, "RevitMainTool Tab");
 
-            new ButtonBuilder("Export IFC", typeof(Command))
-                .Text("RevitMainTool")
-                .Build(panel);
+            RibbonPanel panelTest = application.CreateRibbonPanel(tabName, "Testing");
+
+            new ButtonBuilder("AlignTagsRight", typeof(Tester))
+                .ImagePath($"{Global.AssemblyDirectory}\\Pictures\\Settings.png")
+                .Text("Settings")
+                .Build(panelTest);
+
+
+            // Add a new ribbon panel
+            RibbonPanel panelTags = application.CreateRibbonPanel(tabName, "Tags");
+
+            SplitButtonData splitButtonData = new SplitButtonData("Tags", "Tag Functions");
+            SplitButton splitButton = panelTags.AddItem(splitButtonData) as SplitButton;
+
+            new ButtonBuilder("TagAllSimilar", typeof(TagAllSimilar))
+                .ImagePath($"{Global.AssemblyDirectory}\\Pictures\\TagSimilar.png")
+                .Text("Tag All\nSimilar")
+                .Build(splitButton);
+
+            new ButtonBuilder("SpaceTagsFixedDistance", typeof(SpaceTagsFixedDistanceUI))
+                .ImagePath($"{Global.AssemblyDirectory}\\Pictures\\AlignFixedDistance.png")
+                .Text("Space Tags\nFixed Distance")
+                .Build(splitButton);
+
+            new ButtonBuilder("SpaceTagsEvenly", typeof(SpaceTagsEvenly))
+                .ImagePath($"{Global.AssemblyDirectory}\\Pictures\\SpaceEvenly.png")
+                .Text("Space Tags\nEvenly")
+                .Build(splitButton);
+
+            new ButtonBuilder("AlignTagsLeft", typeof(AlignTagsLeft))
+                .ImagePath($"{Global.AssemblyDirectory}\\Pictures\\AlignLeft.png")
+                .Text("Align Tags\nLeft")
+                .Build(splitButton);
+
+            new ButtonBuilder("AlignTagsCenter", typeof(AlignTagsCenter))
+                .ImagePath($"{Global.AssemblyDirectory}\\Pictures\\AlignCenter.png")
+                .Text("Align Tags\nCenter")
+                .Build(splitButton);
+
+            new ButtonBuilder("AlignTagsRight", typeof(AlignTagsRight))
+                .ImagePath($"{Global.AssemblyDirectory}\\Pictures\\AlignRight.png")
+                .Text("Align Tags\nRight")
+                .Build(splitButton);
+
+            
+
+
+
 
             return Result.Succeeded;
         }
