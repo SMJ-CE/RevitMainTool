@@ -31,16 +31,34 @@ namespace RevitMainTool
             var sel = uidoc.Selection;
             var eleIds = sel.GetElementIds();
 
-            using (var tx = new TransactionGroup(doc))
+            if(eleIds.Count > 0 )
             {
-                tx.Start("Tag All Similar");
+                Element ele = doc.GetElement(eleIds.First());
 
-                IndepententTagMethods.TagAllFamiliesSimilar(doc.GetElement(eleIds.First()));
+                if( ele is IndependentTag)
+                {
+                    using (var tx = new TransactionGroup(doc))
+                    {
+                        tx.Start("Tag All Similar");
 
+                        IndepententTagMethods.TagAllFamiliesSimilar(ele);
 
-                tx.Assimilate();
+                        tx.Assimilate();
+                    }
+                }
+                else if (ele is SpatialElementTag)
+                {
+                    TaskDialog.Show("Not a Valid Tag Dude", "Dude... That's not a valid tag. Choose one that isn't a room or space tag.");
+                }
+                else
+                {
+                    TaskDialog.Show("Not a Tag Selected", "To use this function please select a tag (that isn't a room or space tag) and then run this function");
+                }
             }
-
+            else
+            {
+                TaskDialog.Show("No Tags Selected", "To use this function please select a tag (that isn't a room or space tag) and then run this function");
+            }
 
             return Result.Succeeded;
         }

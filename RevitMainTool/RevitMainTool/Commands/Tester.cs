@@ -37,7 +37,6 @@ namespace RevitMainTool
 
                 IndepententTagMethods.TagAllFamiliesSimilar(doc.GetElement(eleIds.First()));
 
-
                 tx.Assimilate();
             }
 
