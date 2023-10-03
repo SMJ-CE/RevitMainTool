@@ -11,6 +11,7 @@ using System.Linq;
 using Autodesk.Revit.DB.Architecture;
 using System.Reflection.Emit;
 using RevitMainTool.Methods;
+using Autodesk.Revit.DB.Plumbing;
 
 #endregion
 
@@ -36,11 +37,13 @@ namespace RevitMainTool
             {
                 tx.Start("Tagging all similar");
 
-                PipeMethods.GetPipesThatCutView(uidoc, ele);
+                if (ele is Pipe pipe)
+                {
+                    PipeMethods.DimensionPipeToClosestGrid(pipe, uidoc);
+                }
 
                 tx.Assimilate();
             }
-
 
             return Result.Succeeded;
         }
