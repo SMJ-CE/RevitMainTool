@@ -21,12 +21,12 @@ namespace RevitMainTool
             application.CreateRibbonTab(tabName);
 
 
-            RibbonPanel panelTest = application.CreateRibbonPanel(tabName, "Testing");
+            //RibbonPanel panelTest = application.CreateRibbonPanel(tabName, "Testing");
 
-            new ButtonBuilder("AlignTagsRight", typeof(Tester))
-                .ImagePath($"{Global.AssemblyDirectory}\\Pictures\\Settings.png")
-                .Text("Settings")
-                .Build(panelTest);
+            //new ButtonBuilder("AlignTagsRight", typeof(Tester))
+            //    .ImagePath($"{Global.AssemblyDirectory}\\Pictures\\Settings.png")
+            //    .Text("Settings")
+            //    .Build(panelTest);
 
 
             // Add a new ribbon panel
@@ -65,7 +65,12 @@ namespace RevitMainTool
                 .Text("Align Tags\nRight")
                 .Build(splitButton);
 
-            
+            RibbonPanel panelPipes = application.CreateRibbonPanel(tabName, "Pipes");
+
+            new ButtonBuilder("DimensionPipes", typeof(Tester))
+                .ImagePath($"{Global.AssemblyDirectory}\\Pictures\\DimensionPipes.png")
+                .Text("Dimension\nPipes")
+                .Build(panelPipes);
 
 
 

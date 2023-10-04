@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace RevitMainTool.Methods
 {
@@ -21,6 +20,12 @@ namespace RevitMainTool.Methods
             {
 
                 List<Pipe> allPipes = GetPipesThatCutView(uidoc, pipe);
+
+                if (allPipes.Count == 0)
+                {
+                    TaskDialog.Show("No pipes found", "Couldn't find any pipes that cut the view. Make sure the pipes are visible in the current view and that the view actually cuts it");
+                    return;
+                }
 
                 Options opt = new Options();
                 opt.ComputeReferences = true;
@@ -38,10 +43,15 @@ namespace RevitMainTool.Methods
                     Grid gridLeft = grids[2];
                     Grid gridRight = grids[3];
 
-                    Curve gridCurveTop = gridTop.Curve;
-                    Curve gridCurveBottom = gridBottom.Curve;
-                    Curve gridCurveLeft = gridLeft.Curve;
-                    Curve gridCurveRight = gridRight.Curve;
+                    if(gridTop == null && gridBottom == null && gridLeft == null && gridRight == null)
+                    {
+                        continue;
+                    }
+
+                    Curve gridCurveTop = gridTop == null ? null : gridTop.Curve;
+                    Curve gridCurveBottom = gridBottom == null ? null : gridBottom.Curve;
+                    Curve gridCurveLeft = gridLeft == null ? null : gridLeft.Curve;
+                    Curve gridCurveRight = gridRight == null ? null : gridRight.Curve;
 
                     double offset = 1;
 
@@ -64,7 +74,7 @@ namespace RevitMainTool.Methods
 
                     if (isNotVerticale)
                     {
-                        if(Math.Round(dirX, 6) == 0 || Math.Round(dirY, 6) == 0)
+                        if(Math.Round(dirX, 4) == 0 || Math.Round(dirY, 4) == 0)
                         {
                             using (var tx = new Transaction(doc))
                             {
@@ -75,18 +85,50 @@ namespace RevitMainTool.Methods
                                 tx.Commit();
                             }
 
-                            Line line = Line.CreateBound(new XYZ(gridCurveLeft.GetEndPoint(0).X, newStartPoint.Y + offset, 0), new XYZ(gridCurveRight.GetEndPoint(0).X, newStartPoint.Y + offset, 0));
+                            Line testLeftRight = Line.CreateUnbound(new XYZ(newStartPoint.X, newStartPoint.Y + offset, 0), new XYZ(1, 0, 0));
+                            Line testTopBottom = Line.CreateUnbound(new XYZ(newStartPoint.X + offset, newStartPoint.Y, 0), new XYZ(0, 1, 0));
 
-                            ReferenceArray refArray = new ReferenceArray();
-                            refArray.Append(new Reference(choosenPipe));
-                            refArray.Append(new Reference(gridLeft));
-                            refArray.Append(new Reference(gridRight));
+                            ReferenceArray refArrayTopBottom = new ReferenceArray();
+
+                            if(gridTop != null)
+                            {
+                                refArrayTopBottom.Append(new Reference(gridTop));
+                            }
+                            refArrayTopBottom.Append(new Reference(choosenPipe));
+                            if (gridBottom != null)
+                            {
+                                refArrayTopBottom.Append(new Reference(gridBottom));
+                            }
+
+                            ReferenceArray refArrayLeftRight = new ReferenceArray();
+
+                            if (gridLeft != null)
+                            {
+                                refArrayLeftRight.Append(new Reference(gridLeft));
+                            }
+
+                            refArrayLeftRight.Append(new Reference(choosenPipe));
+
+                            if (gridRight != null)
+                            {
+                                refArrayLeftRight.Append(new Reference(gridRight));
+                            }
+                            
+                            
 
                             using (var tx = new Transaction(doc))
                             {
                                 tx.Start("Creating Dimensions");
 
-                                allDimensions.Add(doc.Create.NewDimension(view, line, refArray));
+                                if(refArrayLeftRight.Size > 1)
+                                {
+                                    allDimensions.Add(doc.Create.NewDimension(view, testLeftRight, refArrayLeftRight));
+                                }
+
+                                if (refArrayTopBottom.Size > 1)
+                                {
+                                    allDimensions.Add(doc.Create.NewDimension(view, testTopBottom, refArrayTopBottom));
+                                }
 
                                 tx.Commit();
                             }
@@ -97,185 +139,130 @@ namespace RevitMainTool.Methods
                     }
                     else
                     {
-                        Line line = Line.CreateBound(new XYZ(gridCurveLeft.GetEndPoint(0).X, newStartPoint.Y + offset, 0), new XYZ(gridCurveRight.GetEndPoint(0).X, newStartPoint.Y + offset, 0));
+                        Line testLeftRight = Line.CreateUnbound(new XYZ(newStartPoint.X, newStartPoint.Y + offset, 0), new XYZ(1, 0, 0));
+                        Line testTopBottom = Line.CreateUnbound(new XYZ(newStartPoint.X + offset, newStartPoint.Y, 0), new XYZ(0, 1, 0));
 
-                        ReferenceArray refArray = new ReferenceArray();
-                        refArray.Append(new Reference(choosenPipe));
-                        refArray.Append(new Reference(gridLeft));
-                        refArray.Append(new Reference(gridRight));
+                        ReferenceArray refArrayTopBottom = new ReferenceArray();
+
+                        if (gridTop != null)
+                        {
+                            refArrayTopBottom.Append(new Reference(gridTop));
+                        }
+                        refArrayTopBottom.Append(new Reference(choosenPipe));
+                        if (gridBottom != null)
+                        {
+                            refArrayTopBottom.Append(new Reference(gridBottom));
+                        }
+
+                        ReferenceArray refArrayLeftRight = new ReferenceArray();
+
+                        if (gridLeft != null)
+                        {
+                            refArrayLeftRight.Append(new Reference(gridLeft));
+                        }
+
+                        refArrayLeftRight.Append(new Reference(choosenPipe));
+
+                        if (gridRight != null)
+                        {
+                            refArrayLeftRight.Append(new Reference(gridRight));
+                        }
+
+
 
                         using (var tx = new Transaction(doc))
                         {
                             tx.Start("Creating Dimensions");
 
-                            allDimensions.Add(doc.Create.NewDimension(view, line, refArray));
+                            if (refArrayLeftRight.Size > 1)
+                            {
+                                allDimensions.Add(doc.Create.NewDimension(view, testLeftRight, refArrayLeftRight));
+                            }
+
+                            if (refArrayTopBottom.Size > 1)
+                            {
+                                allDimensions.Add(doc.Create.NewDimension(view, testTopBottom, refArrayTopBottom));
+                            }
 
                             tx.Commit();
                         }
+
+
                     }
 
                 }
 
                 if (allDimensions.Count > 1)
                 {
-                    //IList<ElementId> idsToDelete = new List<ElementId>();
-                    //ReferenceArray dimensionRefsForNewDimension = new ReferenceArray();
+                    List<List<Dimension>> groupDimensionByDirection = GroupDimensionsByDirection(allDimensions, view);
 
-                    //// list of element ids and geometry objects used to weed out duplicate references
-                    //IList<Tuple<ElementId, GeometryObject>> geomObjList = new List<Tuple<ElementId, GeometryObject>>();
-
-                    //Line line = null;
-                    //DimensionType dimType = null;
-
-                    //foreach (Dimension d in allDimensions)
-                    //{
-                    //    idsToDelete.Add(d.Id);
-
-                    //    // take the dimension line & dimension type from the first dimension
-                    //    if (line == null)
-                    //    {
-                    //        line = d.Curve as Line;
-                    //        dimType = d.DimensionType;
-                    //    }
-
-                    //    foreach (Reference dr in d.References)
-                    //    {
-                    //        Element thisElement = doc.GetElement(dr);
-                    //        GeometryObject thisGeomObj = thisElement.GetGeometryObjectFromReference(dr);
-
-                    //        // do not add references to the array if the array already contains a reference
-                    //        // to the same geometry element in the same element
-                    //        bool duplicate = false;
-                    //        foreach (Tuple<ElementId, GeometryObject> myTuple in geomObjList)
-                    //        {
-                    //            ElementId idInList = myTuple.Item1;
-                    //            GeometryObject geomObjInList = myTuple.Item2;
-                    //            if (thisElement.Id == idInList && thisGeomObj == geomObjInList)
-                    //            {
-                    //                duplicate = true;
-                    //                break;
-                    //            }
-                    //        }
-
-                    //        if (!duplicate)
-                    //        {
-                    //            dimensionRefsForNewDimension.Append(dr);
-                    //            geomObjList.Add(new Tuple<ElementId, GeometryObject>(thisElement.Id, thisGeomObj));
-                    //        }
-                    //    }
-                    //}
-
-                    //List<Reference> dimensionRefs = new List<Reference>();
-
-                    //foreach (Reference item in dimensionRefsForNewDimension)
-                    //{
-                    //    dimensionRefs.Add(item);
-                    //}
-
-                    //dimensionRefs = dimensionRefs.GroupBy(x => x.ElementId).Select(x => x.First()).ToList();
-
-                    //ReferenceArray test = new ReferenceArray();
-
-                    //foreach(Reference reference in dimensionRefs)
-                    //{
-                    //    test.Append(reference);
-                    //}
-
-                    //using (Transaction t = new Transaction(doc, "Dimension Consolidation"))
-                    //{
-                    //    t.Start();
-                    //    Dimension newDim = doc.Create.NewDimension(doc.ActiveView, line, test, dimType);
-                    //    doc.Delete(idsToDelete);
-                    //    t.Commit();
-                    //}
-
-
-
-
-
-
-
-                    List<List<Dimension>> groupedDimensions = new List<List<Dimension>>();
-
-                    List<List<Element>> groups = GeneralMethods.GroupElementsBy(allDimensions.Cast<Element>().ToList(), view).ToList();
-
-                    foreach (List<Element> gro in groups)
+                    foreach(List<Dimension> dimensions in groupDimensionByDirection)
                     {
-                        groupedDimensions.Add(gro.Cast<Dimension>().ToList());
-                    }
+                        List<List<Dimension>> groupedDimensions = new List<List<Dimension>>();
 
+                        List<List<Element>> groups = GeneralMethods.GroupElementsByBoundingBox(dimensions.Cast<Element>().ToList(), view).ToList();
 
-                    foreach (List<Dimension> group in groupedDimensions)
-                    {
-                        ReferenceArray refArray = new ReferenceArray();
-
-                        XYZ startPoint = group.First().Curve.GetEndPoint(0);
-                        XYZ endPoint = group.First().Curve.GetEndPoint(0);
-
-                        foreach (Dimension dimension in group)
+                        foreach (List<Element> gro in groups)
                         {
-                            foreach (Reference re in dimension.References)
+                            groupedDimensions.Add(gro.Cast<Dimension>().ToList());
+                        }
+
+
+                        foreach (List<Dimension> group in groupedDimensions)
+                        {
+                            ReferenceArray refArray = new ReferenceArray();
+
+                            XYZ origin = (group.First().Curve as Line).Origin;
+                            XYZ direction = (group.First().Curve as Line).Direction;
+
+                            List<ElementId> fyribils = new List<ElementId>(); 
+
+                            foreach (Dimension dimension in group)
                             {
-                                refArray.Append(re);
+                                foreach (Reference re in dimension.References)
+                                {
+                                    ElementId elId = re.ElementId;
+
+
+                                    if (!fyribils.Contains(elId))
+                                    {
+                                        Element el = doc.GetElement(elId);
+
+                                        refArray.Append(new Reference(el));
+                                        fyribils.Add(elId);
+                                    }
+                                }
+                            }
+
+                            Line line = Line.CreateUnbound(origin, direction);
+
+                            using (var tx = new Transaction(doc))
+                            {
+                                tx.Start("Creating Dimensions");
+
+                                doc.Create.NewDimension(view, line, refArray);
+
+                                tx.Commit();
                             }
 
 
-
                         }
-
-                        Line line = Line.CreateBound(startPoint, endPoint);
-
-                        using (var tx = new Transaction(doc))
-                        {
-                            tx.Start("Creating Dimensions");
-
-                            doc.Create.NewDimension(view, line, refArray);
-
-                            tx.Commit();
-                        }
-
-
                     }
+                    using (var tx = new Transaction(doc))
+                    {
+                        tx.Start("Creating Dimensions");
+
+                        foreach (Dimension dim in allDimensions)
+                        {
+                            doc.Delete(dim.Id);
 
 
+                        }
 
 
-
-
-
-                    //foreach (Dimension dimOrig in allDimensions)
-                    //{
-                    //    Curve curveOrig = dimOrig.Curve;
-                    //    XYZ directionOrig = curveOrig.GetEndPoint(1).Subtract(curveOrig.GetEndPoint(0)).Normalize();
-                    //    XYZ directionOrigRounded = new XYZ(Math.Round(directionOrig.X, 3), Math.Round(directionOrig.Y, 3), Math.Round(directionOrig.Z, 3));
-
-                    //    List<Dimension> aGroupOfDimension = new List<Dimension>();
-
-                    //    foreach (Dimension dim2 in allDimensions)
-                    //    {
-                    //        if (dim2 != dimOrig)
-                    //        {
-                    //            Curve curve = dim2.Curve;
-                    //            XYZ direction = curve.GetEndPoint(1).Subtract(curve.GetEndPoint(0)).Normalize();
-                    //            XYZ directionRounded = new XYZ(Math.Round(direction.X, 3), Math.Round(direction.Y, 3), Math.Round(direction.Z, 3));
-
-                    //            if (directionOrigRounded == directionRounded)
-                    //            {
-
-
-
-
-                    //            }
-                    //        }
-                    //    }
-                    //}
-
-
-
-
-
-
-
+                        tx.Commit();
+                    }
+                    
                 }
 
 
@@ -288,13 +275,102 @@ namespace RevitMainTool.Methods
 
         }
 
+        public static List<List<Dimension>> GroupDimensionsByDirection(List<Dimension> dimensions, View view)
+        {
+            List<List<Dimension>> groups = new List<List<Dimension>>();
+            Dictionary<ElementId, int> elementToGroupMapping = new Dictionary<ElementId, int>();
+
+            // Assign each element to a new group
+            for (int i = 0; i < dimensions.Count; i++)
+            {
+                groups.Add(new List<Dimension>() { dimensions[i] });
+                elementToGroupMapping.Add(dimensions[i].Id, i);
+            }
+
+            // Iterate through each pair of elements to check for overlaps
+            for (int i = 0; i < dimensions.Count; i++)
+            {
+                for (int j = i + 1; j < dimensions.Count; j++)
+                {
+                    // Skip if the elements are the same or already in the same group
+                    if (elementToGroupMapping[dimensions[i].Id] == elementToGroupMapping[dimensions[j].Id])
+                    {
+                        continue;
+                    }
+
+                    // Check for spatial overlap using the geometry of elements (you may need to refine this based on your specific needs)
+                    if (DoDimensionsHaveSameDirection(dimensions[i], dimensions[j]))
+                    {
+                        // If the elements overlap, merge the groups
+                        int groupIndex1 = elementToGroupMapping[dimensions[i].Id];
+                        int groupIndex2 = elementToGroupMapping[dimensions[j].Id];
+
+                        // Merge the groups
+                        groups[groupIndex1].AddRange(groups[groupIndex2]);
+                        groups[groupIndex2].Clear();
+
+                        // Update the mapping for all elements in the merged group
+                        foreach (Dimension mergedElement in groups[groupIndex1])
+                        {
+                            elementToGroupMapping[mergedElement.Id] = groupIndex1;
+                        }
+                    }
+                }
+            }
+
+            // Remove empty groups
+            groups.RemoveAll(group => group.Count == 0);
+
+            return groups;
+        }
+
+        public static bool DoDimensionsHaveSameDirection(Dimension dimension1, Dimension dimension2)
+        {
+            Line line1 = dimension1.Curve as Line;
+            Line line2 = dimension2.Curve as Line;
+
+            if (line1.IsBound && line2.IsBound)
+            {
+                XYZ start1 = dimension1.Curve.GetEndPoint(0);
+                XYZ end1 = dimension1.Curve.GetEndPoint(1);
+
+                XYZ start2 = dimension2.Curve.GetEndPoint(0);
+                XYZ end2 = dimension2.Curve.GetEndPoint(1);
+
+                double a1 = (end1.Y - start1.Y) / (end1.X - start1.X);
+                double a2 = (end2.Y - start2.Y) / (end2.X - start2.X);
+
+                if (Math.Round(a1, 6) == Math.Round(a2, 6))
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                double x1 = Math.Round(line1.Direction.X, 6);
+                double y1 = Math.Round(line1.Direction.Y, 6);
+                double x2 = Math.Round(line2.Direction.X, 6);
+                double y2 = Math.Round(line2.Direction.Y, 6);
+                
+                if (x1 == x2 && y1 == y2)
+                {
+                    return true;
+                }
+            }
+
+
+            
+
+            return false;
+        }
+
 
 
         //https://forums.autodesk.com/t5/revit-api-forum/select-elements-witch-cut-by-the-view/m-p/6793155#M20344
         public static List<Pipe> GetPipesThatCutView(UIDocument UIdoc, Element ele)
         {
             Document doc = UIdoc.Document;
-            Autodesk.Revit.DB.View ActView = doc.ActiveView;
+            View ActView = doc.ActiveView;
 
             List<CurveLoop> _crop = ActView.GetCropRegionShapeManager().GetCropShape().ToList<CurveLoop>();
             CurveLoop cvLoop = _crop.First();
@@ -322,7 +398,6 @@ namespace RevitMainTool.Methods
             // if you need a bigger region just scale 
             //            _outline.Scale(100);
 
-            
             string sysAbreviation = ele.get_Parameter(BuiltInParameter.RBS_DUCT_PIPE_SYSTEM_ABBREVIATION_PARAM).AsValueString();
 
             BoundingBoxIntersectsFilter CutPlaneFilter = new BoundingBoxIntersectsFilter(_outline);
@@ -336,16 +411,7 @@ namespace RevitMainTool.Methods
                             .Where(x => x.get_Parameter(BuiltInParameter.RBS_DUCT_PIPE_SYSTEM_ABBREVIATION_PARAM).AsValueString() == sysAbreviation)
                             .Cast<Pipe>()
                             .ToList();
-            List<ElementId> IdsInCutPlane = new List<ElementId>();
-            foreach (Element e in pipesInCutPlane)
-            {
-                // "postprocessing" here if needed 
-                IdsInCutPlane.Add(e.Id);
-            }
-            UIdoc.Selection.SetElementIds(IdsInCutPlane);
-
-            TaskDialog.Show("yo", string.Join(", ", IdsInCutPlane));
-
+            
             return pipesInCutPlane;
 
         }

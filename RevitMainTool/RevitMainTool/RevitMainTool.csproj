@@ -39,6 +39,7 @@
     <WarningLevel>4</WarningLevel>
     <StartAction>Program</StartAction>
     <StartProgram>$(ProgramW6432)\Autodesk\Revit2023\Revit.exe</StartProgram>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="MoreLinq, Version=3.4.2.0, Culture=neutral, PublicKeyToken=384d532d7e88985d, processorArchitecture=MSIL">
@@ -81,7 +82,6 @@
   <ItemGroup>
     <Compile Include="App.cs" />
     <Compile Include="ButtonBuilder.cs" />
-    <Compile Include="Command.cs" />
     <Compile Include="Commands\AlignTagsCenter.cs" />
     <Compile Include="Commands\AlignTagsLeft.cs" />
     <Compile Include="Commands\AlignTagsRight.cs" />
@@ -89,6 +89,7 @@
     <Compile Include="Commands\SpaceTagsFixedDistanceUI.cs" />
     <Compile Include="Commands\TagAllSimilar.cs" />
     <Compile Include="Commands\DimensionPipes.cs" />
+    <Compile Include="Commands\DimensionPipesThatCutView.cs" />
     <Compile Include="Commands\Tester.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="Methods\PipeMethods.cs" />
@@ -124,6 +125,7 @@
     <Content Include="Pictures\AlignLeft.png" />
     <Content Include="Pictures\AlignRight.png" />
     <Content Include="Pictures\CenterRooms.png" />
+    <Content Include="Pictures\DimensionPipes.png" />
     <Content Include="Pictures\IconRoomImport.png" />
     <Content Include="Pictures\MoveTagsToSpaces.png" />
     <Content Include="Pictures\Settings.png" />
