@@ -15,7 +15,46 @@ namespace RevitMainTool
 {
     public static class GeneralMethods
     {
-        
+        public static XYZ GetMidpointOfElementByLocation(Location location)
+        {
+            XYZ hostLocation = null;
+
+            if (location is LocationPoint locPoint)
+            {
+                hostLocation = locPoint.Point;
+            }
+            else if (location is LocationCurve locCurve)
+            {
+                XYZ startPoint = locCurve.Curve.GetEndPoint(0);
+                XYZ endPoint = locCurve.Curve.GetEndPoint(1);
+                hostLocation = startPoint.Add(endPoint.Subtract(startPoint).Divide(2));
+            }
+
+            return hostLocation;
+        }
+
+        public static double GetRotationOfElement(Location location)
+        {
+            double hostLocation = 0;
+
+            if (location is LocationPoint locPoint)
+            {
+                hostLocation = locPoint.Rotation;
+            }
+            else if (location is LocationCurve locCurve)
+            {
+                XYZ direction = (locCurve.Curve as Line).Direction;
+                XYZ directionMade2D = new XYZ(direction.X, direction.Y, 0);
+                XYZ yAxis = new XYZ(1, 0, 0);
+
+                hostLocation = Math.Acos(directionMade2D.DotProduct(yAxis));
+            }
+
+            return hostLocation;
+        }
+
+
+
         public static List<List<Element>> GroupElementsByBoundingBox(List<Element> elements, View view)
         {
             List<List<Element>> groups = new List<List<Element>>();
@@ -249,11 +288,6 @@ namespace RevitMainTool
 
         }
 
-
-
-
-
-
         public static ICollection<Element> GetSimilarInstances(Element instance)
         {
             Document doc = instance.Document;
@@ -359,15 +393,5 @@ namespace RevitMainTool
 
             return bounding;
         }
-
-        //public static BoundingBoxXYZ GetMaxXYZ(List<Element> elements)
-        //{
-
-
-
-        //}
-
-
-
     }
 }

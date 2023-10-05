@@ -21,27 +21,26 @@ namespace RevitMainTool
             {
                 ElementId viewId = tag.OwnerViewId;
                 View view = doc.GetElement(viewId) as View;
-                Element hostElement = doc.GetElement(tag.GetTaggedReferences().FirstOrDefault().ElementId);
-                XYZ hostLocation = (hostElement.Location as LocationPoint).Point;
-                XYZ tagLocation = GetMidPointOfElement(tag, view);
 
-                Double hostRotation = (hostElement.Location as LocationPoint).Rotation;
+                Element hostElement = doc.GetElement(tag.GetTaggedReferences().FirstOrDefault().ElementId);
+                Location hostElementLocation = hostElement.Location;
+                XYZ hostMidpoint = GeneralMethods.GetMidpointOfElementByLocation(hostElementLocation);
+                Double hostRotation = GeneralMethods.GetRotationOfElement(hostElementLocation);
+                BuiltInCategory hostCategory = hostElement.Category.BuiltInCategory;
                 ElementId familyId = hostElement.get_Parameter(BuiltInParameter.ELEM_FAMILY_PARAM).AsElementId();
 
-                XYZ translation = tagLocation.Subtract(hostLocation);
+                XYZ tagLocation = GetMidPointOfElementByBoundingBox(tag, view);
                 bool leader = tag.HasLeader;
                 TagOrientation originalOrientation = tag.TagOrientation;
+                ElementId symbolId = tag.GetTypeId();
 
+                XYZ translation = tagLocation.Subtract(hostMidpoint);
                 double orientationInverter = 0;
 
                 if (!(Math.Round(Math.Round(hostRotation, 2) % Math.Round(Math.PI, 2), 2) == 0 ^ originalOrientation == TagOrientation.Horizontal))
                 {
                     orientationInverter = Math.Round(Math.PI, 2) / 2;
                 }
-
-                ElementId symbolId = tag.GetTypeId();
-
-                BuiltInCategory hostCategory = hostElement.Category.BuiltInCategory;
 
                 var tagsInView = new FilteredElementCollector(doc, viewId).OfCategory(tag.Category.BuiltInCategory).Where(x => x is IndependentTag).Select(x => (IndependentTag)x).ToList();
                 var allTaggedElements = tagsInView.Select(x => x.GetTaggedElementIds().First().HostElementId).ToList();
@@ -53,18 +52,20 @@ namespace RevitMainTool
                 {
                     int indexInList = allTaggedElements.IndexOf(eleId);
 
-                    Element theElement = doc.GetElement(eleId);
-                    XYZ elementLocation = (theElement.Location as LocationPoint).Point;
-                    Double eleRotation = (theElement.Location as LocationPoint).Rotation;
+                    Element currentElement = doc.GetElement(eleId);
+                    Location currentElementLocation = currentElement.Location;
 
-                    Double finalRotation = eleRotation - hostRotation;
+                    XYZ currentMidpoint = GeneralMethods.GetMidpointOfElementByLocation(currentElementLocation);
+                    Double currentRotation = GeneralMethods.GetRotationOfElement(currentElementLocation);
+
+                    Double finalRotation = currentRotation - hostRotation;
                     XYZ rotatedTranslation = Rotate(translation, finalRotation);
 
-                    XYZ finalHeadLocation = elementLocation.Add(rotatedTranslation);
+                    XYZ finalHeadLocation = currentMidpoint.Add(rotatedTranslation);
 
                     TagOrientation tagOrientation = TagOrientation.Horizontal;
 
-                    if (Math.Round(Math.Round(eleRotation, 2) % Math.Round(Math.PI, 2), 2) == orientationInverter)
+                    if (Math.Round(Math.Round(currentRotation, 2) % Math.Round(Math.PI, 2), 2) == orientationInverter)
                     {
                         tagOrientation = TagOrientation.Vertical;
                     }
@@ -77,7 +78,7 @@ namespace RevitMainTool
                         {
                             tx.Start("Create Tag");
 
-                            newTag = IndependentTag.Create(doc, symbolId, viewId, new Reference(theElement), leader, tagOrientation, finalHeadLocation);
+                            newTag = IndependentTag.Create(doc, symbolId, viewId, new Reference(currentElement), leader, tagOrientation, finalHeadLocation);
 
                             tx.Commit();
                         }
@@ -105,7 +106,7 @@ namespace RevitMainTool
             }
         }
 
-        public static XYZ GetMidPointOfElement(Element element, View view)
+        public static XYZ GetMidPointOfElementByBoundingBox(Element element, View view)
         {
             BoundingBoxXYZ bounding;
             if (element is IndependentTag)

@@ -67,11 +67,17 @@ namespace RevitMainTool
 
             RibbonPanel panelPipes = application.CreateRibbonPanel(tabName, "Pipes");
 
-            new ButtonBuilder("DimensionPipes", typeof(Tester))
+            new ButtonBuilder("DimensionPipes", typeof(DimensionPipesThatCutView))
                 .ImagePath($"{Global.AssemblyDirectory}\\Pictures\\DimensionPipes.png")
                 .Text("Dimension\nPipes")
                 .Build(panelPipes);
 
+            RibbonPanel panelGrids = application.CreateRibbonPanel(tabName, "Grids");
+
+            new ButtonBuilder("HideGridsInLinks", typeof(Tester))
+                .ImagePath($"{Global.AssemblyDirectory}\\Pictures\\HideGrid.png")
+                .Text("Hide Grids\nIn Links")
+                .Build(panelGrids);
 
 
 

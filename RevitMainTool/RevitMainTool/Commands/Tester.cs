@@ -31,53 +31,51 @@ namespace RevitMainTool
             var doc = uidoc.Document;
 
             var sel = uidoc.Selection;
-            var ele1 = doc.GetElement(sel.GetElementIds().ToList()[0]);
-            //var ele2 = doc.GetElement(sel.GetElementIds().ToList()[1]);
-
             View view = doc.ActiveView;
 
-            //TaskDialog.Show("theTest", GeneralMethods.DoBoundingBoxesOverlap(ele1 , ele2, doc.ActiveView).ToString());
 
-            //List<Element> list = new List<Element>();
+            var links = new FilteredElementCollector(doc, view.Id).WhereElementIsNotElementType().OfCategory(BuiltInCategory.OST_RvtLinks).ToList();
 
-            //foreach(ElementId id in sel.GetElementIds())
+            foreach (var link in links)
+            {
+                Document linkDoc = link.Document;
+
+                var grids = new FilteredElementCollector(linkDoc, view.Id).OfCategory(BuiltInCategory.OST_Grids).Select(x => x.Id).ToList();
+
+                if (grids.Count > 0)
+                {
+                    using (var tx = new Transaction(doc))
+                    {
+                        tx.Start("Hiding grids");
+
+                        view.HideElements(grids);
+
+                        tx.Commit();
+                    }
+                }
+            }
+
+
+
+
+            //var test = ele1 as IndependentTag;
+            //var test2 = test.GetTaggedElementIds().ToList()[0].HostElementId;
+            //var test3 = test.GetTaggedReferences().FirstOrDefault().ElementId;
+            //var test4 = GeneralMethods.GetRotationOfElement(doc.GetElement(test2).Location);
+
+            //TaskDialog.Show("bro", test2.ToString() + "--" + test3.ToString() + "--" + test4.ToString());
+
+            //using (var tx = new TransactionGroup(doc))
             //{
-            //    list.Add(doc.GetElement(id));
-            //}
+            //    tx.Start("Tagging all similar");
 
-            //TaskDialog.Show("Yo", PipeMethods.DoDimensionsHaveSameDirection(ele1 as Dimension, ele2 as Dimension).ToString());
-
-
-
-            //List<List<Element>> groupedElements = GeneralMethods.GroupElementsByBoundingBox(list, view);
-
-            //List<List<string>> stringGroup = new List<List<string>>();
-
-            //foreach (List<Element> ele in groupedElements)
-            //{
-            //    List<string> strings = new List<string>();
-            //    foreach (Element ele2 in ele)
+            //    if (ele1 is Pipe pipe)
             //    {
-            //        strings.Add(ele2.Name);
+
             //    }
 
-            //    stringGroup.Add(strings);
-
+            //    tx.Assimilate();
             //}
-
-            //TaskDialog.Show("bro", string.Join(", ", stringGroup));
-
-            using (var tx = new TransactionGroup(doc))
-            {
-                tx.Start("Tagging all similar");
-
-                if (ele1 is Pipe pipe)
-                {
-                    PipeMethods.DimensionPipeToClosestGrid(pipe, uidoc);
-                }
-
-                tx.Assimilate();
-            }
 
             return Result.Succeeded;
         }

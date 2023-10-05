@@ -126,6 +126,7 @@
     <Content Include="Pictures\AlignRight.png" />
     <Content Include="Pictures\CenterRooms.png" />
     <Content Include="Pictures\DimensionPipes.png" />
+    <Content Include="Pictures\HideGrid.png" />
     <Content Include="Pictures\IconRoomImport.png" />
     <Content Include="Pictures\MoveTagsToSpaces.png" />
     <Content Include="Pictures\Settings.png" />
