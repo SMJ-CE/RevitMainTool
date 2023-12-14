@@ -493,11 +493,11 @@ namespace RevitMainTool
             }
             if (view == null)
             {
-                return tags.MinBy(tag => tag.TagHeadPosition.X).First();
+                return tags.Minima(tag => tag.TagHeadPosition.X).First();
             }
             else
             {
-                return tags.MinBy(tag => GetTagBoundingBox(tag, view).Min.X).First();
+                return tags.Minima(tag => GetTagBoundingBox(tag, view).Min.X).First();
             }
         }
 
@@ -509,11 +509,11 @@ namespace RevitMainTool
             }
             if (view == null)
             {
-                return tags.MaxBy(tag => tag.TagHeadPosition.X).First();
+                return tags.Maxima(tag => tag.TagHeadPosition.X).First();
             }
             else
             {
-                return tags.MaxBy(tag => GetTagBoundingBox(tag, view).Max.X).First();
+                return tags.Maxima(tag => GetTagBoundingBox(tag, view).Max.X).First();
             }
         }
 

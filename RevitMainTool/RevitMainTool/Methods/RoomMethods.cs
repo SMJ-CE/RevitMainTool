@@ -193,7 +193,7 @@ namespace RevitMainTool
             return null;
         }
 
-
+        
         public static Room CreateRoomFromLinkedFile(Document currentDoc, Room roomFromLinkedFile)
         {
             Level levelInLinkedModel = roomFromLinkedFile.Level;
@@ -241,7 +241,6 @@ namespace RevitMainTool
             return null;
         }
 
-
         public static Room WhatRoomHasPoint(Document doc, Room roomFromLinkedFile)
         {
             XYZ xyzPoint = (roomFromLinkedFile.Location as LocationPoint).Point;
@@ -277,6 +276,7 @@ namespace RevitMainTool
                 if (room.IsPointInRoom(point))
                 {
                     output = room;
+                    break;
                 }
             }
 

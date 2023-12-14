@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Autodesk.Revit.UI;
 using Autodesk.Revit.DB.Mechanical;
+using Autodesk.Revit.DB.Plumbing;
 
 namespace RevitMainTool
 {
@@ -168,11 +169,11 @@ namespace RevitMainTool
         }
 
 
-        public static Space CreateOrUpdateSpaceFromRoomInLinkedFile(Document currentDoc, Room roomFromLinkedFile)
+        public static Space CreateOrUpdateSpaceFromRoomInLinkedFile(Document currentDoc, Room roomFromLinkedFile, XYZ linkOffsetVector)
         {
             string name = roomFromLinkedFile.LookupParameter("Name").AsValueString();
             string number = roomFromLinkedFile.LookupParameter("Number").AsValueString();
-            Space spaceAtPoint = WhatSpaceHasPoint(currentDoc, roomFromLinkedFile);
+            Space spaceAtPoint = WhatSpaceHasPoint(currentDoc, roomFromLinkedFile, linkOffsetVector);
 
             if (spaceAtPoint != null)
             {
@@ -181,7 +182,7 @@ namespace RevitMainTool
             }
             else
             {
-                CreateSpaceFromRoomInLinkedFile(currentDoc, roomFromLinkedFile);
+                CreateSpaceFromRoomInLinkedFile(currentDoc, roomFromLinkedFile, linkOffsetVector);
             }
 
 
@@ -189,7 +190,7 @@ namespace RevitMainTool
         }
 
 
-        public static Space CreateSpaceFromRoomInLinkedFile(Document currentDoc, Room roomFromLinkedFile)
+        public static Space CreateSpaceFromRoomInLinkedFile(Document currentDoc, Room roomFromLinkedFile, XYZ linkOffsetVector)
         {
             Level levelInLinkedModel = roomFromLinkedFile.Level;
             Level theChosenLevel = LevelMethods.GetLevelInCurrentThatMatchesLinkedLevel(currentDoc, levelInLinkedModel, roomFromLinkedFile.BaseOffset);
@@ -198,7 +199,7 @@ namespace RevitMainTool
 
             if (theChosenLevel != null)
             {
-                XYZ xyzPoint = (roomFromLinkedFile.Location as LocationPoint).Point;
+                XYZ xyzPoint = (roomFromLinkedFile.Location as LocationPoint).Point.Add(linkOffsetVector);
                 Space createdSpace = currentDoc.Create.NewSpace(theChosenLevel, new UV(xyzPoint.X, xyzPoint.Y));
 
                 string name = roomFromLinkedFile.LookupParameter("Name").AsValueString();
@@ -232,7 +233,8 @@ namespace RevitMainTool
                 }
                 else
                 {
-                    createdSpace.get_Parameter(BuiltInParameter.OFFSET_FROM_REFERENCE_BASE).Set(limitOffsetInLinked + theDifference);
+                    var bro = createdSpace.get_Parameter(BuiltInParameter.ROOM_UPPER_OFFSET);
+                    bro.Set(limitOffsetInLinked + theDifference);
                 }
 
                 return createdSpace;
@@ -241,9 +243,17 @@ namespace RevitMainTool
         }
 
 
-        public static Space WhatSpaceHasPoint(Document doc, Room roomFromLinkedFile)
+        public static Space WhatSpaceHasPoint(Document doc, Room roomFromLinkedFile, XYZ linkOffsetVector)
         {
-            XYZ xyzPoint = (roomFromLinkedFile.Location as LocationPoint).Point;
+            var tes = roomFromLinkedFile.Location;
+
+            if (tes == null)
+            {
+                return null;
+            }
+
+
+            XYZ xyzPoint = (tes as LocationPoint).Point.Add(linkOffsetVector);
             double halfHeight = roomFromLinkedFile.UnboundedHeight / 2;
             List<XYZ> points = new List<XYZ>() { xyzPoint, new XYZ(xyzPoint.X, xyzPoint.Y, xyzPoint.Z + halfHeight) };
             Space spaceAtPoint = WhatSpaceHasPoint(doc, points);
@@ -254,6 +264,13 @@ namespace RevitMainTool
         public static Space WhatSpaceHasPoint(Document doc, List<XYZ> points)
         {
             Space test = null;
+
+            ////Troubleshooting by placing pipes
+            //ElementId systemType = new ElementId(12419741);
+            //ElementId pipeTypeId = new ElementId(14954841);
+            //ElementId levelId = new ElementId(15103116);
+            //Pipe.Create(doc, systemType, pipeTypeId, levelId, points[0], points[1]);
+
             foreach (XYZ point in points)
             {
                 test = WhatSpaceHasPoint(doc, point);
@@ -261,6 +278,7 @@ namespace RevitMainTool
                 {
                     return test;
                 }
+
             }
 
             return test;
@@ -268,18 +286,17 @@ namespace RevitMainTool
 
         public static Space WhatSpaceHasPoint(Document doc, XYZ point)
         {
-            var spaces = new FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_MEPSpaces);
-            Space output = null;
+            var spaces = new FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_MEPSpaces).ToList();
 
             foreach (Space space in spaces)
             {
                 if (space.IsPointInSpace(point))
                 {
-                    output = space;
+                    return space;
                 }
             }
 
-            return output;
+            return null;
         }
 
         public static bool IsPointWithinARoom(Document doc, XYZ point)

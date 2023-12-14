@@ -55,28 +55,6 @@ namespace RevitMainTool
                 }
             }
 
-
-
-
-            //var test = ele1 as IndependentTag;
-            //var test2 = test.GetTaggedElementIds().ToList()[0].HostElementId;
-            //var test3 = test.GetTaggedReferences().FirstOrDefault().ElementId;
-            //var test4 = GeneralMethods.GetRotationOfElement(doc.GetElement(test2).Location);
-
-            //TaskDialog.Show("bro", test2.ToString() + "--" + test3.ToString() + "--" + test4.ToString());
-
-            //using (var tx = new TransactionGroup(doc))
-            //{
-            //    tx.Start("Tagging all similar");
-
-            //    if (ele1 is Pipe pipe)
-            //    {
-
-            //    }
-
-            //    tx.Assimilate();
-            //}
-
             return Result.Succeeded;
         }
     }

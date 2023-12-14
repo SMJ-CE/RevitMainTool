@@ -42,8 +42,8 @@
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MoreLinq, Version=3.4.2.0, Culture=neutral, PublicKeyToken=384d532d7e88985d, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\morelinq.3.4.2\lib\net462\MoreLinq.dll</HintPath>
+    <Reference Include="MoreLinq, Version=4.1.0.0, Culture=neutral, PublicKeyToken=384d532d7e88985d, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\morelinq.4.1.0\lib\netstandard2.0\MoreLinq.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -60,14 +60,10 @@
       <HintPath>..\..\packages\QuickGraph.3.6.61119.7\lib\net4\QuickGraph.Serialization.dll</HintPath>
     </Reference>
     <Reference Include="RevitAPI">
-      <HintPath Condition="Exists('..\..\RevitAssemblies\RevitAPI.dll')">..\..\RevitAssemblies\RevitAPI.dll</HintPath>
-      <Private>False</Private>
-      <HintPath>..\..\..\..\..\..\..\Program Files\Autodesk\Revit 2023\RevitAPI.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\..\Program Files\Autodesk\Revit 2023\RevitAPI.dll</HintPath>
     </Reference>
     <Reference Include="RevitAPIUI">
-      <HintPath Condition="Exists('..\..\RevitAssemblies\RevitAPIUI.dll')">..\..\RevitAssemblies\RevitAPIUI.dll</HintPath>
-      <Private>False</Private>
-      <HintPath>..\..\..\..\..\..\..\Program Files\Autodesk\Revit 2023\RevitAPIUI.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\..\Program Files\Autodesk\Revit 2023\RevitAPIUI.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -90,6 +86,7 @@
     <Compile Include="Commands\TagAllSimilar.cs" />
     <Compile Include="Commands\DimensionPipes.cs" />
     <Compile Include="Commands\DimensionPipesThatCutView.cs" />
+    <Compile Include="Commands\Tester2.cs" />
     <Compile Include="Commands\Tester.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="Methods\PipeMethods.cs" />
