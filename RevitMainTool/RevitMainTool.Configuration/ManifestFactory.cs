@@ -4,7 +4,7 @@ using System.IO;
 
 namespace RevitMainTool.Configuration
 {
-    internal class ManifestFactory
+    public class ManifestFactory
     {
         public void Create(string directory)
         {

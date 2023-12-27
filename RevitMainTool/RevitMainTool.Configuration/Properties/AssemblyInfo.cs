@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("RevitMainTool.Configuration")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyDescription("Eivind")]
+[assembly: AssemblyConfiguration("asdf")]
+[assembly: AssemblyCompany("asdf")]
 [assembly: AssemblyProduct("RevitMainTool.Configuration")]
 [assembly: AssemblyCopyright("Copyright ©  2023")]
 [assembly: AssemblyTrademark("")]

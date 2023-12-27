@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RevitMainTool", "RevitMainT
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RevitMainTool.Configuration", "RevitMainTool\RevitMainTool.Configuration\RevitMainTool.Configuration.csproj", "{5BAFE162-5A0B-4DA3-B7CF-03361BEBCF7A}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "RevitMainTool.Setup", "RevitMainTool\RevitMainTool.Setup\RevitMainTool.Setup.vdproj", "{1269DFDE-6350-4DDD-8586-FF8D6514FCB8}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{5BAFE162-5A0B-4DA3-B7CF-03361BEBCF7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5BAFE162-5A0B-4DA3-B7CF-03361BEBCF7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5BAFE162-5A0B-4DA3-B7CF-03361BEBCF7A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1269DFDE-6350-4DDD-8586-FF8D6514FCB8}.Debug|Any CPU.ActiveCfg = Debug
-		{1269DFDE-6350-4DDD-8586-FF8D6514FCB8}.Debug|Any CPU.Build.0 = Debug
-		{1269DFDE-6350-4DDD-8586-FF8D6514FCB8}.Release|Any CPU.ActiveCfg = Release
-		{1269DFDE-6350-4DDD-8586-FF8D6514FCB8}.Release|Any CPU.Build.0 = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

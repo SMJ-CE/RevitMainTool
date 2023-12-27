@@ -1,12 +1,22 @@
-﻿namespace RevitMainTool.Configuration
+﻿using Squirrel;
+using System;
+using System.Threading.Tasks;
+
+namespace RevitMainTool.Configuration
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            if (args.Length != 1) return;
+            Console.WriteLine("hello Eivind");
+            Console.ReadLine();
+            //using (var mgr = new UpdateManager("C:\\installer_test"))
+            //{
+            //    await mgr.UpdateApp();
+            //}
+            //if (args.Length != 1) return;
 
-            new ManifestFactory().Create(args[0]);
+            //new ManifestFactory().Create(args[0]);
         }
     }
 }
