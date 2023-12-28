@@ -23,7 +23,7 @@ namespace RevitMainTool.Configuration
 
             //save manifest to a file
             RevitProduct revitProduct = RevitProductUtility.GetAllInstalledRevitProducts()[0];
-            var targetDir = Path.Combine(revitProduct.AllUsersAddInFolder, "RevitMainTool.addin");
+            var targetDir = Path.Combine(revitProduct.CurrentUserAddInFolder, "RevitMainTool.addin");
             manifest.SaveAs(targetDir);
         }
     }

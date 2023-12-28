@@ -1,5 +1,6 @@
 ﻿using Squirrel;
 using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace RevitMainTool.Configuration
@@ -8,15 +9,19 @@ namespace RevitMainTool.Configuration
     {
         static async Task Main(string[] args)
         {
-            Console.WriteLine("hello Eivind");
-            Console.ReadLine();
-            //using (var mgr = new UpdateManager("C:\\installer_test"))
-            //{
-            //    await mgr.UpdateApp();
-            //}
-            //if (args.Length != 1) return;
+            var cwd = Directory.GetCurrentDirectory();
+            var content = "test" + string.Join(", ", args);
+            
+            try {
+                File.WriteAllText("C:\\Users\\eev_9\\source\\repos\\SMJTools\\RevitMainTool\\RevitMainTool\\RevitMainTool.Configuration\\Releases\\log.txt", content);
 
-            //new ManifestFactory().Create(args[0]);
+                new ManifestFactory().Create(cwd);
+            }catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            Console.WriteLine(content);
+            Console.ReadLine();
         }
     }
 }
