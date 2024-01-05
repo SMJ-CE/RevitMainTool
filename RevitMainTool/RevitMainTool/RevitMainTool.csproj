@@ -86,6 +86,8 @@
     <Compile Include="Commands\TagAllSimilar.cs" />
     <Compile Include="Commands\DimensionPipes.cs" />
     <Compile Include="Commands\DimensionPipesThatCutView.cs" />
+    <Compile Include="Commands\Tester4.cs" />
+    <Compile Include="Commands\Tester3.cs" />
     <Compile Include="Commands\Tester2.cs" />
     <Compile Include="Commands\Tester.cs" />
     <Compile Include="Global.cs" />
