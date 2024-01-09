@@ -13,13 +13,14 @@ using System.Reflection.Emit;
 using RevitMainTool.Methods;
 using Autodesk.Revit.DB.Plumbing;
 using System.Windows.Controls;
+using Autodesk.Revit.DB.Mechanical;
 
 #endregion
 
 namespace RevitMainTool
 {
     [Transaction(TransactionMode.Manual)]
-    public class Tester2 : IExternalCommand
+    public class Tester5 : IExternalCommand
     {
         public Result Execute(
           ExternalCommandData commandData,
@@ -38,38 +39,40 @@ namespace RevitMainTool
 
             if (selectedElementsIds.Count > 0)
             {
-                if (selectedElementsIds.Count == 1) 
+
+
+
+                foreach ( var selectedElement in selectedElementsIds)
                 {
-                    Element selectedElement = doc.GetElement(selectedElementsIds.First());
+                    var currentElement = doc.GetElement(selectedElement);
 
-                    if (selectedElement is RevitLinkInstance revitLink)
+                    if (currentElement is ViewSheet currentViewSheet)
                     {
-                        var rooms = new FilteredElementCollector(revitLink.GetLinkDocument()).OfCategory(BuiltInCategory.OST_Rooms).Cast<Room>();
+                        var allViewsOnSheet = currentViewSheet.GetAllPlacedViews();
 
-                        XYZ linkOffsetVector = revitLink.GetTransform().Origin;
-
-                        using (var tx = new Transaction(doc))
+                        if(allViewsOnSheet.Count > 0)
                         {
-                            tx.Start("Updating Spaces");
-
-                            foreach (var room in rooms)
+                            foreach(var viewId in allViewsOnSheet)
                             {
-                                string number = room.LookupParameter("Number").AsValueString();
+                                var currentView = doc.GetElement(viewId) as View;
 
-                                if (number == "R02.2110")
+                                if(currentView.ViewType == ViewType.FloorPlan)
                                 {
-                                    SpaceMethods.CreateOrUpdateSpaceFromRoomInLinkedFile(doc, room, linkOffsetVector);
+
                                 }
-                                //SpaceMethods.CreateOrUpdateSpaceFromRoomInLinkedFile(doc, room, linkOffsetVector);
+
                             }
-
-                            tx.Commit();
                         }
-
                         
+
                     }
+
+
                 }
+
+
             }
+
 
             return Result.Succeeded;
         }

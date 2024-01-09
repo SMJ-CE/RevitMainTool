@@ -193,51 +193,59 @@ namespace RevitMainTool
         public static Space CreateSpaceFromRoomInLinkedFile(Document currentDoc, Room roomFromLinkedFile, XYZ linkOffsetVector)
         {
             Level levelInLinkedModel = roomFromLinkedFile.Level;
-            Level theChosenLevel = LevelMethods.GetLevelInCurrentThatMatchesLinkedLevel(currentDoc, levelInLinkedModel, roomFromLinkedFile.BaseOffset);
+            Level theChosenLevel = LevelMethods.GetLevelInCurrentThatMatchesLinkedLevel(currentDoc, levelInLinkedModel);
 
             double theDifference = levelInLinkedModel.Elevation - theChosenLevel.Elevation;
 
             if (theChosenLevel != null)
             {
-                XYZ xyzPoint = (roomFromLinkedFile.Location as LocationPoint).Point.Add(linkOffsetVector);
-                Space createdSpace = currentDoc.Create.NewSpace(theChosenLevel, new UV(xyzPoint.X, xyzPoint.Y));
+                Location roomLocation = roomFromLinkedFile.Location;
 
-                string name = roomFromLinkedFile.LookupParameter("Name").AsValueString();
-                string number = roomFromLinkedFile.LookupParameter("Number").AsValueString();
-
-                createdSpace.Name = name;
-                createdSpace.Number = number;
-
-                Level upperLevelLimitInLinked = roomFromLinkedFile.UpperLimit;
-                double limitOffsetInLinked = roomFromLinkedFile.LimitOffset;
-                double baseOffset = roomFromLinkedFile.BaseOffset + theDifference;
-
-                createdSpace.get_Parameter(BuiltInParameter.ROOM_LOWER_OFFSET).Set(baseOffset);
-
-                if (upperLevelLimitInLinked != null)
+                if(roomLocation != null)
                 {
-                    Level upperLevelInCurrent = LevelMethods.GetLevelInCurrentThatMatchesLinkedLevel(currentDoc, upperLevelLimitInLinked, limitOffsetInLinked);
+                    XYZ xyzPoint = (roomLocation as LocationPoint).Point.Add(linkOffsetVector);
+                    ElementId roomPhase = roomFromLinkedFile.get_Parameter(BuiltInParameter.ROOM_PHASE).AsElementId();
+                    
+                    Space createdSpace = currentDoc.Create.NewSpace(theChosenLevel, currentDoc.GetElement(roomPhase) as Phase, new UV(xyzPoint.X, xyzPoint.Y));
+                    
+                    string name = roomFromLinkedFile.LookupParameter("Name").AsValueString();
+                    string number = roomFromLinkedFile.LookupParameter("Number").AsValueString();
 
-                    if (upperLevelInCurrent != null)
+                    createdSpace.Name = name;
+                    createdSpace.Number = number;
+
+                    Level upperLevelLimitInLinked = roomFromLinkedFile.UpperLimit;
+                    double limitOffsetInLinked = roomFromLinkedFile.LimitOffset;
+                    double baseOffset = roomFromLinkedFile.BaseOffset + theDifference;
+
+                    createdSpace.get_Parameter(BuiltInParameter.ROOM_LOWER_OFFSET).Set(baseOffset);
+
+                    if (upperLevelLimitInLinked != null)
                     {
-                        limitOffsetInLinked += upperLevelLimitInLinked.Elevation - upperLevelInCurrent.Elevation;
-                        Parameter limitOffset = createdSpace.get_Parameter(BuiltInParameter.ROOM_UPPER_OFFSET);
-                        limitOffset.Set(limitOffsetInLinked);
-                        createdSpace.UpperLimit = upperLevelInCurrent;
+                        Level upperLevelInCurrent = LevelMethods.GetLevelInCurrentThatMatchesLinkedLevel(currentDoc, upperLevelLimitInLinked, limitOffsetInLinked);
+
+                        if (upperLevelInCurrent != null)
+                        {
+                            limitOffsetInLinked += upperLevelLimitInLinked.Elevation - upperLevelInCurrent.Elevation;
+                            Parameter limitOffset = createdSpace.get_Parameter(BuiltInParameter.ROOM_UPPER_OFFSET);
+                            limitOffset.Set(limitOffsetInLinked);
+                            createdSpace.UpperLimit = upperLevelInCurrent;
+                        }
+                        else
+                        {
+                            double limtThingy = limitOffsetInLinked + (upperLevelLimitInLinked.Elevation - theChosenLevel.Elevation);
+                            createdSpace.get_Parameter(BuiltInParameter.ROOM_UPPER_OFFSET).Set(limtThingy);
+                        }
                     }
                     else
                     {
-                        double limtThingy = limitOffsetInLinked + (upperLevelLimitInLinked.Elevation - theChosenLevel.Elevation);
-                        createdSpace.get_Parameter(BuiltInParameter.ROOM_UPPER_OFFSET).Set(limtThingy);
+                        var bro = createdSpace.get_Parameter(BuiltInParameter.ROOM_UPPER_OFFSET);
+                        bro.Set(limitOffsetInLinked + theDifference);
                     }
-                }
-                else
-                {
-                    var bro = createdSpace.get_Parameter(BuiltInParameter.ROOM_UPPER_OFFSET);
-                    bro.Set(limitOffsetInLinked + theDifference);
-                }
 
-                return createdSpace;
+                    return createdSpace;
+                }
+                
             }
             return null;
         }
@@ -245,15 +253,15 @@ namespace RevitMainTool
 
         public static Space WhatSpaceHasPoint(Document doc, Room roomFromLinkedFile, XYZ linkOffsetVector)
         {
-            var tes = roomFromLinkedFile.Location;
+            var roomLocation = roomFromLinkedFile.Location;
 
-            if (tes == null)
+            if (roomLocation == null)
             {
                 return null;
             }
 
 
-            XYZ xyzPoint = (tes as LocationPoint).Point.Add(linkOffsetVector);
+            XYZ xyzPoint = (roomLocation as LocationPoint).Point.Add(linkOffsetVector);
             double halfHeight = roomFromLinkedFile.UnboundedHeight / 2;
             List<XYZ> points = new List<XYZ>() { xyzPoint, new XYZ(xyzPoint.X, xyzPoint.Y, xyzPoint.Z + halfHeight) };
             Space spaceAtPoint = WhatSpaceHasPoint(doc, points);
@@ -278,7 +286,6 @@ namespace RevitMainTool
                 {
                     return test;
                 }
-
             }
 
             return test;

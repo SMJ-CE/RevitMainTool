@@ -12,6 +12,8 @@ using Autodesk.Revit.DB.Architecture;
 using System.Reflection.Emit;
 using RevitMainTool.Methods;
 using Autodesk.Revit.DB.Plumbing;
+using RevitMainTool.Models;
+using System.Collections.ObjectModel;
 
 #endregion
 
@@ -33,25 +35,17 @@ namespace RevitMainTool
             var sel = uidoc.Selection;
             View view = doc.ActiveView;
 
+            IEnumerable<ViewSheet> allViewSheets = new FilteredElementCollector(doc).OfClass(typeof(ViewSheet)).Cast<ViewSheet>();
 
-            var links = new FilteredElementCollector(doc, view.Id).WhereElementIsNotElementType().OfCategory(BuiltInCategory.OST_RvtLinks).ToList();
-
-            foreach (var link in links)
+            if (allViewSheets.Count() > 0)
             {
-                Document linkDoc = link.Document;
-
-                var grids = new FilteredElementCollector(linkDoc, view.Id).OfCategory(BuiltInCategory.OST_Grids).Select(x => x.Id).ToList();
-
-                if (grids.Count > 0)
+                using (var tx = new Transaction(doc))
                 {
-                    using (var tx = new Transaction(doc))
-                    {
-                        tx.Start("Hiding grids");
+                    tx.Start("Updating SMJ Scale and Paper Sizes");
 
-                        view.HideElements(grids);
+                    TitleBlockMethods.UpdatePaperSizeAndSMJScale(allViewSheets, doc);
 
-                        tx.Commit();
-                    }
+                    tx.Commit();
                 }
             }
 

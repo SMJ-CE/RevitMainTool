@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
+using RevitMainTool.Models;
 
 namespace RevitMainTool
 {
@@ -49,10 +50,78 @@ namespace RevitMainTool
         public static Guid GUIDTriggerSheetNumber = new Guid("dea3bf3d-74eb-42a1-a757-1539271fc0d0");
         public static Guid GUIDTriggerTitleBlockChanged = new Guid("124d2dea-8ec6-40f5-9bcb-f84d23ee3309");
 
+        public static List<PaperSizes> PaperSizes = new List<PaperSizes>()
+        {
+            new PaperSizes()
+            {
+                Name = "A0",
+                Height = 841,
+                Width = 1189
+            },
+            new PaperSizes()
+            {
+                Name = "A0",
+                Height = 1189,
+                Width = 841
+            },
+            new PaperSizes()
+            {
+                Name = "A1",
+                Height = 841,
+                Width = 594
+            },
+            new PaperSizes()
+            {
+                Name = "A1",
+                Height = 594,
+                Width = 841
+            },
+            new PaperSizes()
+            {
+                Name = "A2",
+                Height = 420,
+                Width = 594
+            },
+            new PaperSizes()
+            {
+                Name = "A2",
+                Height = 594,
+                Width = 420
+            },
+            new PaperSizes()
+            {
+                Name = "A3",
+                Height = 420,
+                Width = 297
+            },
+            new PaperSizes()
+            {
+                Name = "A3",
+                Height = 297,
+                Width = 420
+            },
+            new PaperSizes()
+            {
+                Name = "A4",
+                Height = 210,
+                Width = 297
+            },
+            new PaperSizes()
+            {
+                Name = "A4",
+                Height = 297,
+                Width = 210
+            }
+        };
+
+
         public static Alignment EventTagAlignment;
         public static TagOrientation EventTagOrientation;
         public static List<IndependentTag> EventTags;
         public static double EventDistance;
+
+
+
 
         public static T MostCommon<T>(this IEnumerable<T> list)
         {
