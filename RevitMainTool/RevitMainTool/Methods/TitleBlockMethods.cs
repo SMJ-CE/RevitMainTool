@@ -50,50 +50,60 @@ namespace RevitMainTool.Methods
             foreach (ViewSheet sheet in viewSheetsToBeUpdated)
             {
                 var viewElementIds = sheet.GetAllPlacedViews();
+                Parameter SMJScaleParameter = sheet.LookupParameter("SMJ Scale");
 
-                if (viewElementIds.Count() > 0)
+                if (SMJScaleParameter != null)
                 {
-                    HashSet<string> scalesInViewSheet = new HashSet<string>();
-
-                    foreach (var viewElement in viewElementIds)
+                    if (viewElementIds.Count() > 0)
                     {
-                        var viewOnSheetElement = doc.GetElement(viewElement);
+                        HashSet<string> scalesInViewSheet = new HashSet<string>();
 
-                        if (viewOnSheetElement is View viewOnSheet)
+                        foreach (var viewElement in viewElementIds)
                         {
-                            if (viewOnSheet.ViewType != ViewType.Legend && viewOnSheet.ViewType != ViewType.ThreeD && viewOnSheet.ViewType != ViewType.DraftingView)
+                            var viewOnSheetElement = doc.GetElement(viewElement);
+
+                            if (viewOnSheetElement is View viewOnSheet)
                             {
-                                scalesInViewSheet.Add("1:" + viewOnSheet.Scale.ToString());
+                                if (viewOnSheet.ViewType != ViewType.Legend && viewOnSheet.ViewType != ViewType.ThreeD && viewOnSheet.ViewType != ViewType.DraftingView)
+                                {
+                                    scalesInViewSheet.Add("1:" + viewOnSheet.Scale.ToString());
+                                }
                             }
+                        }
+
+                        SMJScaleParameter.Set(string.Join(", ", scalesInViewSheet));
+                    }
+                }
+
+                Parameter paperSizeParameter = sheet.LookupParameter("Paper Size");
+
+                if (paperSizeParameter != null)
+                {
+                    var sheetId = sheet.Id;
+
+                    var titleBlocksInView = titleBlocksInDoc.Where(x => x.OwnerViewId == sheetId);
+
+                    FamilyInstance choosenOne = null;
+                    double temporaryDouble = 0;
+
+                    foreach (FamilyInstance titleBlock in titleBlocksInView)
+                    {
+                        var param = titleBlock.get_Parameter(BuiltInParameter.SHEET_WIDTH);
+                        double width = param.AsDouble();
+
+                        if (width > temporaryDouble)
+                        {
+                            temporaryDouble = width;
+                            choosenOne = titleBlock;
                         }
                     }
 
-                    sheet.LookupParameter("SMJ Scale").Set(string.Join(", ", scalesInViewSheet));
-                }
-
-                var sheetId = sheet.Id;
-
-                var titleBlocksInView = titleBlocksInDoc.Where(x => x.OwnerViewId == sheetId);
-
-                FamilyInstance choosenOne = null;
-                double temporaryDouble = 0;
-
-                foreach (FamilyInstance titleBlock in titleBlocksInView)
-                {
-                    var param = titleBlock.get_Parameter(BuiltInParameter.SHEET_WIDTH);
-                    double width = param.AsDouble();
-
-                    if (width > temporaryDouble)
+                    if (choosenOne != null)
                     {
-                        temporaryDouble = width;
-                        choosenOne = titleBlock;
+                        paperSizeParameter.Set(GetPaperSize(choosenOne));
                     }
                 }
-
-                if (choosenOne != null)
-                {
-                    sheet.LookupParameter("Paper Size").Set(GetPaperSize(choosenOne));
-                }
+                
             }
         }
 

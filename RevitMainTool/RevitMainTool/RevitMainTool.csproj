@@ -42,8 +42,14 @@
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Autodesk.IFC.Export.UI">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files\Autodesk\Revit 2023\AddIns\IFCExporterUI\Autodesk.IFC.Export.UI.dll</HintPath>
+    </Reference>
     <Reference Include="MoreLinq, Version=4.1.0.0, Culture=neutral, PublicKeyToken=384d532d7e88985d, processorArchitecture=MSIL">
       <HintPath>..\..\packages\morelinq.4.1.0\lib\netstandard2.0\MoreLinq.dll</HintPath>
+    </Reference>
+    <Reference Include="Ookii.Dialogs.Wpf, Version=5.0.0.0, Culture=neutral, PublicKeyToken=66aa232afad40158, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Ookii.Dialogs.Wpf.5.0.1\lib\net462\Ookii.Dialogs.Wpf.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -68,6 +74,9 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Security" />
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
     </Reference>
@@ -88,9 +97,9 @@
     <Compile Include="Commands\DimensionPipesThatCutView.cs" />
     <Compile Include="Commands\Tester5.cs" />
     <Compile Include="Commands\Tester4.cs" />
-    <Compile Include="Commands\Tester3.cs" />
-    <Compile Include="Commands\Tester2.cs" />
-    <Compile Include="Commands\Tester.cs" />
+    <Compile Include="Commands\ElementUnhideEverythingInView.cs" />
+    <Compile Include="Commands\CreateOrUpdateSpaceFromLinkedFile.cs" />
+    <Compile Include="Commands\UpdatePaperSizesAndSMJScale.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="Methods\PipeMethods.cs" />
     <Compile Include="Methods\DimensionMethods.cs" />
@@ -104,6 +113,8 @@
     <Compile Include="Methods\ViewMethods.cs" />
     <Compile Include="Models\PaperSizes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SelectionFilters\SelectionFilterLinkedDocument.cs" />
+    <Compile Include="SelectionFilters\SelectionFilterRoomsInLinkedDocument.cs" />
     <Compile Include="Triggers\TriggerSheetName.cs" />
     <Compile Include="Triggers\TriggerSheetNumber.cs" />
     <Compile Include="Triggers\TriggerTitleBlockChanged.cs" />

@@ -39,35 +39,35 @@ namespace RevitMainTool
 
             if (selectedElementsIds.Count > 0)
             {
-
-
+                Level baseLevel = view.GenLevel;
 
                 foreach ( var selectedElement in selectedElementsIds)
                 {
-                    var currentElement = doc.GetElement(selectedElement);
-
-                    if (currentElement is ViewSheet currentViewSheet)
+                    if (doc.GetElement(selectedElement) is FamilyInstance instance)
                     {
-                        var allViewsOnSheet = currentViewSheet.GetAllPlacedViews();
+                        Parameter elevationParameter = instance.get_Parameter(BuiltInParameter.INSTANCE_ELEVATION_PARAM);
+                        
+                        Level currentLevel = doc.GetElement(instance.LevelId) as Level;
 
-                        if(allViewsOnSheet.Count > 0)
+                        if(currentLevel.Id.IntegerValue != baseLevel.Id.IntegerValue)
                         {
-                            foreach(var viewId in allViewsOnSheet)
+                            double elevationFromLevel = elevationParameter.AsDouble();
+
+                            double elevationDifference = currentLevel.Elevation - baseLevel.Elevation;
+
+                            double newElevationFromLevel = elevationFromLevel + elevationDifference;
+
+                            using (var tx = new Transaction(doc))
                             {
-                                var currentView = doc.GetElement(viewId) as View;
+                                tx.Start("change level");
 
-                                if(currentView.ViewType == ViewType.FloorPlan)
-                                {
+                                instance.get_Parameter(BuiltInParameter.FAMILY_LEVEL_PARAM).Set(baseLevel.Id);
+                                elevationParameter.Set(newElevationFromLevel);
 
-                                }
-
+                                tx.Commit();
                             }
                         }
-                        
-
                     }
-
-
                 }
 
 

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Autodesk.Revit.UI;
 using Autodesk.Revit.DB.Mechanical;
 using Autodesk.Revit.DB.Plumbing;
+using System.Windows.Controls;
 
 namespace RevitMainTool
 {
@@ -169,6 +170,40 @@ namespace RevitMainTool
         }
 
 
+        public static Space CreateSpaceFromRoomInLinkedFile(Document doc, RevitLinkInstance linkInstance)
+        {
+            var rooms = new FilteredElementCollector(linkInstance.GetLinkDocument()).OfCategory(BuiltInCategory.OST_Rooms).Cast<Room>();
+
+            XYZ linkOffsetVector = linkInstance.GetTransform().Origin;
+
+            CreateSpaceFromRoomInLinkedFile(doc, rooms, linkOffsetVector);
+
+            return null;
+        }
+
+        public static Space CreateSpaceFromRoomInLinkedFile(Document doc, IEnumerable<Room> roomsFromLinkedFile, XYZ linkOffsetVector)
+        {
+            
+            using (var tx = new Transaction(doc))
+            {
+                tx.Start("Updating Spaces");
+
+                foreach (var room in roomsFromLinkedFile)
+                {
+                    string number = room.LookupParameter("Number").AsValueString();
+
+                    //if (number == "R02.21100")
+                    //{
+                    //    CreateOrUpdateSpaceFromRoomInLinkedFile(doc, room, linkOffsetVector);
+                    //}
+                    CreateOrUpdateSpaceFromRoomInLinkedFile(doc, room, linkOffsetVector);
+                }
+
+                tx.Commit();
+            }
+            return null;
+        }
+
         public static Space CreateOrUpdateSpaceFromRoomInLinkedFile(Document currentDoc, Room roomFromLinkedFile, XYZ linkOffsetVector)
         {
             string name = roomFromLinkedFile.LookupParameter("Name").AsValueString();
@@ -204,9 +239,19 @@ namespace RevitMainTool
                 if(roomLocation != null)
                 {
                     XYZ xyzPoint = (roomLocation as LocationPoint).Point.Add(linkOffsetVector);
-                    ElementId roomPhase = roomFromLinkedFile.get_Parameter(BuiltInParameter.ROOM_PHASE).AsElementId();
-                    
-                    Space createdSpace = currentDoc.Create.NewSpace(theChosenLevel, currentDoc.GetElement(roomPhase) as Phase, new UV(xyzPoint.X, xyzPoint.Y));
+                    ElementId roomPhaseId = roomFromLinkedFile.get_Parameter(BuiltInParameter.ROOM_PHASE).AsElementId();
+                    Element test = currentDoc.GetElement(roomPhaseId);
+                    Phase roomPhase = test as Phase;
+                    Space createdSpace;
+
+                    if (roomPhase != null)
+                    {
+                        createdSpace = currentDoc.Create.NewSpace(theChosenLevel, roomPhase, new UV(xyzPoint.X, xyzPoint.Y));
+                    }
+                    else
+                    {
+                        createdSpace = currentDoc.Create.NewSpace(theChosenLevel, new UV(xyzPoint.X, xyzPoint.Y));
+                    }
                     
                     string name = roomFromLinkedFile.LookupParameter("Name").AsValueString();
                     string number = roomFromLinkedFile.LookupParameter("Number").AsValueString();

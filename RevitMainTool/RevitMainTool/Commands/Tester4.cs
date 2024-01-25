@@ -14,6 +14,11 @@ using RevitMainTool.Methods;
 using Autodesk.Revit.DB.Plumbing;
 using System.Windows.Controls;
 using Autodesk.Revit.DB.Mechanical;
+using Ookii.Dialogs.Wpf;
+using Microsoft.Win32;
+using System.IO;
+using BIM.IFC.Export.UI;
+using static Autodesk.Revit.DB.SpecTypeId;
 
 #endregion
 
@@ -35,69 +40,73 @@ namespace RevitMainTool
             var sel = uidoc.Selection;
             View view = doc.ActiveView;
 
-            var selectedElementsIds = sel.GetElementIds();
-
-            var allViewSheets = new FilteredElementCollector(doc).OfClass(typeof(ViewSheet));
-
-
-            if (allViewSheets.Count() > 0)
+            var saveFileDialog = new SaveFileDialog();
+            if(saveFileDialog.ShowDialog() == true)
             {
-                using (var tx = new Transaction(doc))
+                //Autodesk.Revit.UI.TaskDialog mainDialog = new Autodesk.Revit.UI.TaskDialog("Hello, Revit!");
+                //mainDialog.MainInstruction = "Hello, Revit!";
+                //mainDialog.MainContent = saveFileDialog.FileName;
+
+                //mainDialog.Show();
+
+                string folderPath = Path.GetDirectoryName(saveFileDialog.FileName);
+                string fileName = Path.GetFileName(saveFileDialog.FileName);
+
+                using (var tg = new TransactionGroup(doc))
                 {
-                    tx.Start("Updating SMJ Scale and Paper Sizes");
+                    tg.Start("Exporting to IFC");
 
-                    foreach (ViewSheet sheet in allViewSheets)
+                    using (var tx = new Transaction(doc))
                     {
-                        var viewElementIds = sheet.GetAllPlacedViews();
+                        tx.Start("binding Links");
 
-                        if(viewElementIds.Count() > 0)
+                        var allLinkedFiles = new FilteredElementCollector(doc, view.Id).OfClass(typeof(RevitLinkInstance));
+
+                        foreach (RevitLinkInstance instance in allLinkedFiles)
                         {
-                            HashSet<string> scalesInViewSheet = new HashSet<string>();
+                            
 
-                            foreach (var viewElement in viewElementIds)
-                            {
-                                var viewOnSheetElement = doc.GetElement(viewElement);
 
-                                if (viewOnSheetElement is View viewOnSheet)
-                                {
-                                    if (viewOnSheet.ViewType != ViewType.Legend && viewOnSheet.ViewType != ViewType.ThreeD && viewOnSheet.ViewType != ViewType.DraftingView)
-                                    {
-                                        scalesInViewSheet.Add("1:" + viewOnSheet.Scale.ToString());
-                                    }
-                                }
-                            }
-
-                            sheet.LookupParameter("SMJ Scale").Set(string.Join(", ", scalesInViewSheet));
-                        }
-                        
-                        var titleBlocks = new FilteredElementCollector(doc, sheet.Id).OfCategory(BuiltInCategory.OST_TitleBlocks);
-
-                        FamilyInstance choosenOne = null;
-                        double temporaryDouble = 0;
-
-                        foreach (FamilyInstance titleBlock in titleBlocks)
-                        {
-                            var param = titleBlock.get_Parameter(BuiltInParameter.SHEET_WIDTH);
-                            double width = param.AsDouble();
-
-                            if(width > temporaryDouble)
-                            {
-                                temporaryDouble = width;
-                                choosenOne = titleBlock;
-                            }
                         }
 
-                        if(choosenOne != null)
-                        {
-                            string tes = choosenOne.Symbol.Name;
 
-                            sheet.LookupParameter("Paper Size").Set(tes.Remove(tes.Length - 1, 1));
-                        }
+                        tx.Commit();
                     }
 
-                    tx.Commit();
+                    IFCExportOptions exportOptions = new IFCExportOptions();
+
+                    exportOptions.FileVersion = IFCVersion.IFC2x3;
+
+                    BIM.IFC.Export.UI.IFCExportConfiguration myIFCExportConfiguration = BIM.IFC.Export.UI.IFCExportConfiguration.CreateDefaultConfiguration();
+
+                    //myIFCExportConfiguration.ExportLinkedFiles = true;
+                    //myIFCExportConfiguration.UseActiveViewGeometry = true;
+                    //myIFCExportConfiguration.VisibleElementsOfCurrentView = true;
+
+                    myIFCExportConfiguration.UpdateOptions(exportOptions, view.Id);
+
+                    using (var tx = new Transaction(doc))
+                    {
+                        tx.Start("Exporting to IFC");
+
+                        
+
+                        doc.Export(folderPath, fileName, exportOptions);
+
+                        tx.Commit();
+                    }
+
+                    tg.RollBack();
                 }
+
+                
+
+                
+
+
+
             }
+
 
             return Result.Succeeded;
         }

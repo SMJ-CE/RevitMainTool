@@ -20,7 +20,7 @@ using System.Collections.ObjectModel;
 namespace RevitMainTool
 {
     [Transaction(TransactionMode.Manual)]
-    public class Tester : IExternalCommand
+    public class UpdatePaperSizesAndSMJScale : IExternalCommand
     {
         public Result Execute(
           ExternalCommandData commandData,

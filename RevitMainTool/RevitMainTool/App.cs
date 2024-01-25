@@ -17,7 +17,7 @@ namespace RevitMainTool
         public Result OnStartup(UIControlledApplication application)
         {
             // Create a custom ribbon tab
-            var tabName = "SMJMainTool";
+            var tabName = "SMJ Main Tool";
             application.CreateRibbonTab(tabName);
 
 
@@ -65,20 +65,26 @@ namespace RevitMainTool
                 .Text("Align Tags\nRight")
                 .Build(splitButton);
 
-            RibbonPanel panelPipes = application.CreateRibbonPanel(tabName, "Pipes");
+            //RibbonPanel panelPipes = application.CreateRibbonPanel(tabName, "Pipes");
 
-            new ButtonBuilder("DimensionPipes", typeof(DimensionPipesThatCutView))
-                .ImagePath($"{Global.AssemblyDirectory}\\Pictures\\DimensionPipes.png")
-                .Text("Dimension\nPipes")
-                .Build(panelPipes);
+            //new ButtonBuilder("DimensionPipes", typeof(DimensionPipesThatCutView))
+            //    .ImagePath($"{Global.AssemblyDirectory}\\Pictures\\DimensionPipes.png")
+            //    .Text("Dimension\nPipes")
+            //    .Build(panelPipes);
 
-            RibbonPanel panelGrids = application.CreateRibbonPanel(tabName, "Grids");
+            RibbonPanel panelSheet = application.CreateRibbonPanel(tabName, "Sheet");
 
-            new ButtonBuilder("HideGridsInLinks", typeof(Tester))
-                .ImagePath($"{Global.AssemblyDirectory}\\Pictures\\HideGrid.png")
-                .Text("Hide Grids\nIn Links")
-                .Build(panelGrids);
+            new ButtonBuilder("UpdatePaperSizesAndSMJScale", typeof(UpdatePaperSizesAndSMJScale))
+                .ImagePath($"{Global.AssemblyDirectory}\\Pictures\\Settings.png")
+                .Text("Update Sheet\nParameters")
+                .Build(panelSheet);
 
+            RibbonPanel panelSpaces = application.CreateRibbonPanel(tabName, "Spaces");
+
+            new ButtonBuilder("CreateOrUpdateSpaceFromLinkedFile", typeof(CreateOrUpdateSpaceFromLinkedFile))
+                .ImagePath($"{Global.AssemblyDirectory}\\Pictures\\IconRoomImport.png")
+                .Text("Create Spaces\nFrom Rooms")
+                .Build(panelSpaces);
 
 
             return Result.Succeeded;
