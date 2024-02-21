@@ -49,64 +49,100 @@ namespace RevitMainTool.Methods
 
             foreach (ViewSheet sheet in viewSheetsToBeUpdated)
             {
-                var viewElementIds = sheet.GetAllPlacedViews();
-                Parameter SMJScaleParameter = sheet.LookupParameter("SMJ Scale");
-
-                if (SMJScaleParameter != null)
-                {
-                    if (viewElementIds.Count() > 0)
-                    {
-                        HashSet<string> scalesInViewSheet = new HashSet<string>();
-
-                        foreach (var viewElement in viewElementIds)
-                        {
-                            var viewOnSheetElement = doc.GetElement(viewElement);
-
-                            if (viewOnSheetElement is View viewOnSheet)
-                            {
-                                if (viewOnSheet.ViewType != ViewType.Legend && viewOnSheet.ViewType != ViewType.ThreeD && viewOnSheet.ViewType != ViewType.DraftingView)
-                                {
-                                    scalesInViewSheet.Add("1:" + viewOnSheet.Scale.ToString());
-                                }
-                            }
-                        }
-
-                        SMJScaleParameter.Set(string.Join(", ", scalesInViewSheet));
-                    }
-                }
-
-                Parameter paperSizeParameter = sheet.LookupParameter("Paper Size");
-
-                if (paperSizeParameter != null)
-                {
-                    var sheetId = sheet.Id;
-
-                    var titleBlocksInView = titleBlocksInDoc.Where(x => x.OwnerViewId == sheetId);
-
-                    FamilyInstance choosenOne = null;
-                    double temporaryDouble = 0;
-
-                    foreach (FamilyInstance titleBlock in titleBlocksInView)
-                    {
-                        var param = titleBlock.get_Parameter(BuiltInParameter.SHEET_WIDTH);
-                        double width = param.AsDouble();
-
-                        if (width > temporaryDouble)
-                        {
-                            temporaryDouble = width;
-                            choosenOne = titleBlock;
-                        }
-                    }
-
-                    if (choosenOne != null)
-                    {
-                        paperSizeParameter.Set(GetPaperSize(choosenOne));
-                    }
-                }
-                
+                UpdatePaperSizeAndSMJScale(sheet, doc, titleBlocksInDoc);
             }
         }
 
+        public static void UpdatePaperSizeAndSMJScale(ViewSheet sheet, Document doc)
+        {
+            var titleBlocksInDoc = new FilteredElementCollector(doc).OfClass(typeof(FamilyInstance)).Where(x => x.Category.Name == "Title Blocks");
+
+            UpdatePaperSizeAndSMJScale(sheet, doc, titleBlocksInDoc);
+        }
+
+        public static void UpdatePaperSizeAndSMJScale(ViewSheet sheet, Document doc, IEnumerable<Element> titleBlocks)
+        {
+            var viewElementIds = sheet.GetAllPlacedViews();
+            Parameter SMJScaleParameter = sheet.LookupParameter("Lutfall");
+
+            //if (SMJScaleParameter != null)
+            //{
+            //    if (viewElementIds.Count() > 0)
+            //    {
+            //        HashSet<string> scalesInViewSheet = new HashSet<string>();
+
+            //        foreach (var viewElement in viewElementIds)
+            //        {
+            //            var viewOnSheetElement = doc.GetElement(viewElement);
+
+            //            if (viewOnSheetElement is View viewOnSheet)
+            //            {
+            //                if (viewOnSheet.ViewType != ViewType.Legend && viewOnSheet.ViewType != ViewType.ThreeD && viewOnSheet.ViewType != ViewType.DraftingView)
+            //                {
+            //                    scalesInViewSheet.Add("1:" + viewOnSheet.Scale.ToString());
+            //                }
+            //            }
+            //        }
+
+            //        SMJScaleParameter.Set(string.Join(", ", scalesInViewSheet));
+            //    }
+            //}
+
+            if (SMJScaleParameter != null)
+            {
+                if (viewElementIds.Count() > 0)
+                {
+                    List<int> scalesInViewSheet = new List<int>();
+
+                    foreach (var viewElement in viewElementIds)
+                    {
+                        var viewOnSheetElement = doc.GetElement(viewElement);
+
+                        if (viewOnSheetElement is View viewOnSheet)
+                        {
+                            if (viewOnSheet.ViewType != ViewType.Legend && viewOnSheet.ViewType != ViewType.ThreeD && viewOnSheet.ViewType != ViewType.DraftingView)
+                            {
+                                scalesInViewSheet.Add(viewOnSheet.Scale);
+                            }
+                        }
+                    }
+
+                    if (scalesInViewSheet.Count() > 0)
+                    {
+                        SMJScaleParameter.Set("1:" + scalesInViewSheet.Max().ToString());
+                    }
+
+                }
+            }
+
+
+            Parameter paperSizeParameter = sheet.LookupParameter("Pappírstødd");
+
+            if (paperSizeParameter != null)
+            {
+                var sheetId = sheet.Id;
+                var titleBlocksInView = titleBlocks.Where(x => x.OwnerViewId == sheetId);
+                FamilyInstance choosenOne = null;
+                double temporaryDouble = 0;
+
+                foreach (FamilyInstance titleBlock in titleBlocksInView)
+                {
+                    var param = titleBlock.get_Parameter(BuiltInParameter.SHEET_WIDTH);
+                    double width = param.AsDouble();
+
+                    if (width > temporaryDouble)
+                    {
+                        temporaryDouble = width;
+                        choosenOne = titleBlock;
+                    }
+                }
+
+                if (choosenOne != null)
+                {
+                    paperSizeParameter.Set(GetPaperSize(choosenOne));
+                }
+            }
+        }
 
     }
 }

@@ -337,16 +337,18 @@ namespace RevitMainTool
         }
 
 
-        public static BoundingBoxXYZ GetBoundingBox(List<Element> elements)
+        public static BoundingBoxXYZ GetBoundingBox(IEnumerable<Element> elements)
         {
-            View view = elements[0].Document.ActiveView;
+            View view = elements.First().Document.ActiveView;
             List<XYZ> maxPoints = new List<XYZ>();
             List<XYZ> minPoints = new List<XYZ>();
 
             double maxX = double.MinValue;
             double maxY = double.MinValue;
+            double maxZ = double.MinValue;
             double minX = double.MaxValue;
             double minY = double.MaxValue;
+            double minZ = double.MaxValue;
 
             foreach (Element element in elements)
             {
@@ -362,8 +364,10 @@ namespace RevitMainTool
 
                 double maxPointX = maxPoint.X;
                 double maxPointY = maxPoint.Y;
+                double maxPointZ = maxPoint.Z;
                 double minPointX = minPoint.X;
                 double minPointY = minPoint.Y;
+                double minPointZ = minPoint.Z;
 
                 if (maxX < maxPointX)
                 {
@@ -373,6 +377,10 @@ namespace RevitMainTool
                 {
                     maxY = maxPointY;
                 }
+                if (maxZ < maxPointZ)
+                {
+                    maxZ = maxPointZ;
+                }
                 if (minX > minPointX)
                 {
                     minX = minPointX;
@@ -381,11 +389,14 @@ namespace RevitMainTool
                 {
                     minY = minPointY;
                 }
+                if (minZ > minPointZ)
+                {
+                    minZ = minPointZ;
+                }
             }
 
-
-            XYZ max = new XYZ(maxX, maxY, 0);
-            XYZ min = new XYZ(minX, minY, 0);
+            XYZ max = new XYZ(maxX, maxY, maxZ);
+            XYZ min = new XYZ(minX, minY, minZ);
 
             BoundingBoxXYZ bounding = new BoundingBoxXYZ();
             bounding.Min = min;

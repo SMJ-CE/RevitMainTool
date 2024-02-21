@@ -30,7 +30,7 @@ namespace RevitMainTool.Configuration
             }
 
             //TODO find a way to handle multiple versions of Revit
-            var product = products.Where(x => (int)x.Version == 12).FirstOrDefault();
+            var product = products.Where(x => (int)x.Version == 13).FirstOrDefault();
 
             if (product == null)
             {
