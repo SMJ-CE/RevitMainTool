@@ -15,6 +15,11 @@ namespace RevitMainTool.Methods
             var filtersInDoc = new FilteredElementCollector(doc).OfClass(typeof(ParameterFilterElement)).Cast<ParameterFilterElement>();
             var filtersIdInView = view.GetFilters();
 
+            foreach(ElementId filterId in filtersIdInView)
+            {
+                view.RemoveFilter(filterId);
+            }
+
             string prefixText = "Z ";
             string filterName = prefixText + abbreviationString;
 
@@ -55,11 +60,7 @@ namespace RevitMainTool.Methods
             //Apply filter to view and set visibility graphics
             ElementId filterIdNotCurrentAbbreviation = filter.Id;
 
-            if (!filtersIdInView.Any(x => x == filterIdNotCurrentAbbreviation))
-            {
-                view.AddFilter(filterIdNotCurrentAbbreviation);
-            };
-
+            view.AddFilter(filterIdNotCurrentAbbreviation);
             OverrideGraphicSettings graphicSettings = new OverrideGraphicSettings();
             graphicSettings.SetHalftone(true);
             graphicSettings.SetProjectionLineColor(new Color(0, 0, 0));
@@ -89,10 +90,8 @@ namespace RevitMainTool.Methods
 
             //Apply filter to view and set visibility graphics
             ElementId filterIdNotMech = filter.Id;
-            if (!filtersIdInView.Any(x => x == filterIdNotMech))
-            {
-                view.AddFilter(filterIdNotMech);
-            };
+
+            view.AddFilter(filterIdNotMech);
             graphicSettings = new OverrideGraphicSettings();
             graphicSettings.SetHalftone(true);
             graphicSettings.SetProjectionLineColor(new Color(0, 0, 0));
@@ -105,30 +104,29 @@ namespace RevitMainTool.Methods
             filter = null;
             string currentSheetNumber = view.get_Parameter(BuiltInParameter.VIEWPORT_SHEET_NUMBER).AsValueString();
 
-            if (currentSheetNumber.Length > 0)
+            if (currentSheetNumber != null)
             {
-                if (ParameterFilterElement.IsNameUnique(doc, filterNameNotSection))
-                {
-                    ICollection<ElementId> builtInCategories = new List<ElementId>
+                ICollection<ElementId> builtInCategories = new List<ElementId>
                         {
                             new ElementId(BuiltInCategory.OST_Sections)
                         };
 
-                    FilterRule filterRule = ParameterFilterRuleFactory.CreateNotBeginsWithRule(new ElementId(BuiltInParameter.VIEWPORT_SHEET_NUMBER), currentSheetNumber);
-                    ElementParameterFilter to = new ElementParameterFilter(filterRule);
+                FilterRule filterRule = ParameterFilterRuleFactory.CreateNotBeginsWithRule(new ElementId(BuiltInParameter.VIEWPORT_SHEET_NUMBER), currentSheetNumber);
+                ElementParameterFilter to = new ElementParameterFilter(filterRule);
+                if (ParameterFilterElement.IsNameUnique(doc, filterNameNotSection))
+                {
+                    
                     filter = ParameterFilterElement.Create(doc, filterNameNotSection, builtInCategories, to);
                 }
                 else
                 {
+                    filter.SetElementFilter(to);
                     filter = filtersInDoc.First(x => x.Name == filterNameNotSection);
                 }
 
                 //Apply filter to view and set visibility graphics
                 ElementId filterIdNotSectionInSheet = filter.Id;
-                if (!filtersIdInView.Any(x => x == filterIdNotSectionInSheet))
-                {
-                    view.AddFilter(filterIdNotSectionInSheet);
-                };
+                view.AddFilter(filterIdNotSectionInSheet);
                 view.SetFilterVisibility(filterIdNotSectionInSheet, false);
             }
 
@@ -140,10 +138,7 @@ namespace RevitMainTool.Methods
 
             //Apply filter to view and set visibility graphics
             ElementId filterIdGridsAndLevels = filter.Id;
-            if (!filtersIdInView.Any(x => x == filterIdGridsAndLevels))
-            {
-                view.AddFilter(filterIdGridsAndLevels);
-            };
+            view.AddFilter(filterIdGridsAndLevels);
             view.SetFilterVisibility(filterIdGridsAndLevels, false);
 
 
@@ -154,10 +149,7 @@ namespace RevitMainTool.Methods
 
             //Apply filter to view and set visibility graphics
             ElementId filterIdVoidss = filter.Id;
-            if (!filtersIdInView.Any(x => x == filterIdVoidss))
-            {
-                view.AddFilter(filterIdVoidss);
-            };
+            view.AddFilter(filterIdVoidss);
             view.SetFilterVisibility(filterIdVoidss, false);
 
 

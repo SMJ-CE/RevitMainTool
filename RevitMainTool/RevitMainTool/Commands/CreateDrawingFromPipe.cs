@@ -40,14 +40,15 @@ namespace RevitMainTool
 
             if (selectedElementsIds.Count == 1)
             {
-                using (var txg = new TransactionGroup(doc))
+
+                Element element = doc.GetElement(selectedElementsIds.First());
+
+                if (element is Pipe)
                 {
-                    txg.Start("Create Drawings");
-
-                    Element element = doc.GetElement(selectedElementsIds.First());
-
-                    if (element is Pipe)
+                    using (var txg = new TransactionGroup(doc))
                     {
+                        txg.Start("Create Drawings");
+
                         string abbreviationString = element.get_Parameter(BuiltInParameter.RBS_DUCT_PIPE_SYSTEM_ABBREVIATION_PARAM).AsValueString();
                         using (var tx = new Transaction(doc))
                         {
@@ -69,22 +70,34 @@ namespace RevitMainTool
                         {
                             tx.Start("New sheet and filters");
 
+                            ViewSheet sheetToUpdate = null;
+
                             if (view.GetPlacementOnSheetStatus() != ViewPlacementOnSheetStatus.CompletelyPlaced)
                             {
-                                TitleBlockMethods.UpdatePaperSizeAndSMJScale(ViewMethods.CreateSheetForView(view, new string[] { "AUTO_", abbreviationString }), doc);
+                                sheetToUpdate = ViewMethods.CreateSheetForView(view, new string[] { "AUTO_", abbreviationString });
                             }
+
+                            if(sheetToUpdate == null)
+                            {
+                                string currentSheetNumber = view.get_Parameter(BuiltInParameter.VIEWPORT_SHEET_NUMBER).AsValueString();
+                                sheetToUpdate = new FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Sheets).First(x => (x as ViewSheet).SheetNumber == currentSheetNumber) as ViewSheet;
+                            }
+
+                            TitleBlockMethods.UpdatePaperSizeAndSMJScale(sheetToUpdate, doc);
 
                             FilterMethods.CreateFiltersOnView(doc, abbreviationString, view);
 
                             tx.Commit();
                         }
+                        txg.Assimilate();
                     }
-                    else
-                    {
-                        TaskDialog.Show("SelectedElement", "Selected element is not a pipe. Select a element that is a pipe and try again <3");
-                    }
-                    txg.Assimilate();
+
                 }
+                else
+                {
+                    TaskDialog.Show("SelectedElement", "Selected element is not a pipe. Select a element that is a pipe and try again <3");
+                }
+
             }
             else
             {

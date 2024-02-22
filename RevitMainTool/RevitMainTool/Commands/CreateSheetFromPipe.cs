@@ -40,28 +40,30 @@ namespace RevitMainTool
 
             if (selectedElementsIds.Count == 1)
             {
-                using (var tx = new Transaction(doc))
+
+                Element element = doc.GetElement(selectedElementsIds.First());
+
+                if (element is Pipe)
                 {
-                    tx.Start("Create Drawings");
-
-                    Element element = doc.GetElement(selectedElementsIds.First());
-
-                    if (element is Pipe)
+                    using (var tx = new Transaction(doc))
                     {
+                        tx.Start("Create Sheet");
+
                         string abbreviationString = element.get_Parameter(BuiltInParameter.RBS_DUCT_PIPE_SYSTEM_ABBREVIATION_PARAM).AsValueString();
-                        
-                        if(view.GetPlacementOnSheetStatus() != ViewPlacementOnSheetStatus.CompletelyPlaced)
+
+                        if (view.GetPlacementOnSheetStatus() != ViewPlacementOnSheetStatus.CompletelyPlaced)
                         {
                             TitleBlockMethods.UpdatePaperSizeAndSMJScale(ViewMethods.CreateSheetForView(view, new string[] { "AUTO_", abbreviationString }), doc);
                         }
-                        
+                        tx.Commit();
                     }
-                    else
-                    {
-                        TaskDialog.Show("SelectedElement", "Selected element is not a pipe. Select a element that is a pipe and try again <3");
-                    }
-                    tx.Commit();
+
                 }
+                else
+                {
+                    TaskDialog.Show("SelectedElement", "Selected element is not a pipe. Select a element that is a pipe and try again <3");
+                }
+
             }
             else
             {

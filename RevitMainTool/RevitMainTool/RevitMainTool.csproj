@@ -144,11 +144,13 @@
     <Content Include="Pictures\AlignLeft.png" />
     <Content Include="Pictures\AlignRight.png" />
     <Content Include="Pictures\CenterRooms.png" />
+    <Content Include="Pictures\Cropping.png" />
     <Content Include="Pictures\DimensionPipes.png" />
     <Content Include="Pictures\HideGrid.png" />
     <Content Include="Pictures\IconRoomImport.png" />
     <Content Include="Pictures\MoveTagsToSpaces.png" />
     <Content Include="Pictures\Settings.png" />
+    <Content Include="Pictures\Sheet.png" />
     <Content Include="Pictures\smj.ico" />
     <Content Include="Pictures\SpaceEvenly.png" />
     <Content Include="Pictures\TagSimilar.png" />

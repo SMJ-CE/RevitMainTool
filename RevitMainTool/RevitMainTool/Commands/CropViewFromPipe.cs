@@ -40,16 +40,18 @@ namespace RevitMainTool
 
             if (selectedElementsIds.Count == 1)
             {
-                using (var tx = new Transaction(doc))
+
+
+                Element element = doc.GetElement(selectedElementsIds.First());
+
+                if (element is Pipe)
                 {
-                    tx.Start("Create Drawings");
-
-                    Element element = doc.GetElement(selectedElementsIds.First());
-
-                    if (element is Pipe)
+                    if (view.ViewType != ViewType.Section)
                     {
-                        if(view.ViewType != ViewType.Section)
+                        using (var tx = new Transaction(doc))
                         {
+                            tx.Start("Crop View");
+
                             string abbreviationString = element.get_Parameter(BuiltInParameter.RBS_DUCT_PIPE_SYSTEM_ABBREVIATION_PARAM).AsValueString();
 
                             view.CropBoxActive = false;
@@ -60,18 +62,20 @@ namespace RevitMainTool
                             XYZ border = new XYZ(1, 1, 1);
                             ViewMethods.AdjustCropToElements(view, allSimilarElements, border);
                             view.CropBoxActive = true;
-                        }
-                        else
-                        {
-                            TaskDialog.Show("IsSection", "This function does not work on sections, go to a plan view and try again");
+
+                            tx.Commit();
                         }
                     }
                     else
                     {
-                        TaskDialog.Show("SelectedElement", "Selected element is not a pipe. Select a element that is a pipe and try again <3");
+                        TaskDialog.Show("IsSection", "This function does not work on sections, go to a plan view and try again");
                     }
-                    tx.Commit();
                 }
+                else
+                {
+                    TaskDialog.Show("SelectedElement", "Selected element is not a pipe. Select a element that is a pipe and try again <3");
+                }
+
             }
             else
             {

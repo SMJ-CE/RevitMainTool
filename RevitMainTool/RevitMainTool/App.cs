@@ -72,12 +72,12 @@ namespace RevitMainTool
             //    .Text("Dimension\nPipes")
             //    .Build(panelPipes);
 
-            RibbonPanel panelSheet = application.CreateRibbonPanel(tabName, "Sheet");
+            //RibbonPanel panelSheet = application.CreateRibbonPanel(tabName, "Sheet");
 
-            new ButtonBuilder("UpdatePaperSizesAndSMJScale", typeof(UpdatePaperSizesAndSMJScale))
-                .ImagePath($"{Global.AssemblyDirectory}\\Pictures\\Settings.png")
-                .Text("Update Sheet\nParameters")
-                .Build(panelSheet);
+            //new ButtonBuilder("UpdatePaperSizesAndSMJScale", typeof(UpdatePaperSizesAndSMJScale))
+            //    .ImagePath($"{Global.AssemblyDirectory}\\Pictures\\Settings.png")
+            //    .Text("Update Sheet\nParameters")
+            //    .Build(panelSheet);
 
             RibbonPanel panelSpaces = application.CreateRibbonPanel(tabName, "Spaces");
 
@@ -89,28 +89,33 @@ namespace RevitMainTool
             RibbonPanel panelHSKV = application.CreateRibbonPanel(tabName, "HSKV");
 
             new ButtonBuilder("CreateDrawingFromPipe", typeof(CreateDrawingFromPipe))
-                .ImagePath($"{Global.AssemblyDirectory}\\Pictures\\IconRoomImport.png")
+                .ImagePath($"{Global.AssemblyDirectory}\\Pictures\\Sheet.png")
                 .Text("Create Drawing\nFrom Pipe")
                 .Build(panelHSKV);
 
             new ButtonBuilder("CropViewFromPipe", typeof(CropViewFromPipe))
-                .ImagePath($"{Global.AssemblyDirectory}\\Pictures\\IconRoomImport.png")
+                .ImagePath($"{Global.AssemblyDirectory}\\Pictures\\Cropping.png")
                 .Text("Crop View\nFrom Pipe")
                 .Build(panelHSKV);
 
             new ButtonBuilder("CreateSheetFromPipe", typeof(CreateSheetFromPipe))
-                .ImagePath($"{Global.AssemblyDirectory}\\Pictures\\IconRoomImport.png")
+                .ImagePath($"{Global.AssemblyDirectory}\\Pictures\\Sheet.png")
                 .Text("Create Sheet\nFrom Pipe")
                 .Build(panelHSKV);
 
+            new ButtonBuilder("CreateFiltersFromPipes", typeof(CreateFiltersFromPipes))
+                .ImagePath($"{Global.AssemblyDirectory}\\Pictures\\Tester.png")
+                .Text("Create Filters\nFrom Pipe")
+                .Build(panelHSKV);
+
             new ButtonBuilder("UpdatePaperAndScaleParameterOnCurrent", typeof(UpdatePaperAndScaleParameterOnCurrent))
-                .ImagePath($"{Global.AssemblyDirectory}\\Pictures\\IconRoomImport.png")
+                .ImagePath($"{Global.AssemblyDirectory}\\Pictures\\Settings.png")
                 .Text("Update Current\nSheet Parameter")
                 .Build(panelHSKV);
 
-            new ButtonBuilder("CreateFiltersFromPipes", typeof(CreateFiltersFromPipes))
-                .ImagePath($"{Global.AssemblyDirectory}\\Pictures\\IconRoomImport.png")
-                .Text("Create Filters\nFrom Pipe")
+            new ButtonBuilder("UpdatePaperSizesAndSMJScale", typeof(UpdatePaperSizesAndSMJScale))
+                .ImagePath($"{Global.AssemblyDirectory}\\Pictures\\Settings.png")
+                .Text("Update Sheet\nParameters")
                 .Build(panelHSKV);
 
             return Result.Succeeded;

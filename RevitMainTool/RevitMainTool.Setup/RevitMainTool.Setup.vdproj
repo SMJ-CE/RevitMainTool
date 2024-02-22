@@ -135,6 +135,24 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_1E0E451AD25B10D57E7DBB836370B2E7"
+        "OwnerKey" = "8:_9E22B0E4F5EF426FA9759FBA7F33CE53"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_1E0E451AD25B10D57E7DBB836370B2E7"
+        "OwnerKey" = "8:_F99A05E4943934ACAFD13440D370616B"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_1E0E451AD25B10D57E7DBB836370B2E7"
+        "OwnerKey" = "8:_D563234CA46720FF33B908ED49F18A8E"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_1E87361625A97DB014DED069C0DBA640"
         "OwnerKey" = "8:_19466AAF5414ED4CEEF4593B77EFF979"
         "MsmSig" = "8:_UNDEFINED"
@@ -599,24 +617,6 @@
         {
         "MsmKey" = "8:_61508F0E59C42B4E6EB06A68D0125EAD"
         "OwnerKey" = "8:_9E22B0E4F5EF426FA9759FBA7F33CE53"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_69159D810ADC2A920E8E40EB2A50B36D"
-        "OwnerKey" = "8:_F99A05E4943934ACAFD13440D370616B"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_69159D810ADC2A920E8E40EB2A50B36D"
-        "OwnerKey" = "8:_9E22B0E4F5EF426FA9759FBA7F33CE53"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_69159D810ADC2A920E8E40EB2A50B36D"
-        "OwnerKey" = "8:_D563234CA46720FF33B908ED49F18A8E"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -2164,6 +2164,12 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_1E0E451AD25B10D57E7DBB836370B2E7"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_697CCD2FBF20122E0CB77CAD5B96CDE1"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2231,12 +2237,6 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_F99A05E4943934ACAFD13440D370616B"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_69159D810ADC2A920E8E40EB2A50B36D"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -2963,6 +2963,37 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_1E0E451AD25B10D57E7DBB836370B2E7"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:Autodesk.UI.Windows, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_1E0E451AD25B10D57E7DBB836370B2E7"
+                    {
+                    "Name" = "8:Autodesk.UI.Windows.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:Autodesk.UI.Windows.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_28216ADB9ADE45F5AE4CBB6492CBFE9E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_1E87361625A97DB014DED069C0DBA640"
             {
             "AssemblyRegister" = "3:1"
@@ -3411,37 +3442,6 @@
                     }
                 }
             "SourcePath" = "8:Xceed.Wpf.AvalonDock.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_28216ADB9ADE45F5AE4CBB6492CBFE9E"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_69159D810ADC2A920E8E40EB2A50B36D"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Autodesk.UI.Windows, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_69159D810ADC2A920E8E40EB2A50B36D"
-                    {
-                    "Name" = "8:Autodesk.UI.Windows.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:Autodesk.UI.Windows.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_28216ADB9ADE45F5AE4CBB6492CBFE9E"
@@ -5065,15 +5065,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:RevitMainTool"
-        "ProductCode" = "8:{650B016B-CE17-4D58-80D4-A3A37F142F05}"
-        "PackageCode" = "8:{5C35028C-944E-4AE3-A8CC-8027778655AE}"
+        "ProductCode" = "8:{0E751119-8EF9-4958-B4E1-27E0071C9DD9}"
+        "PackageCode" = "8:{B38F20A4-80F7-49D4-9E0E-43F558A8E477}"
         "UpgradeCode" = "8:{496E59E3-48F5-4F60-9FFD-3E0AC74FF842}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:0.1.3"
+        "ProductVersion" = "8:0.1.4"
         "Manufacturer" = "8:Vormadal"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"

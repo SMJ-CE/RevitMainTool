@@ -153,10 +153,10 @@ namespace RevitMainTool
             var test = new FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Sheets).Where(x => (x as ViewSheet).IsPlaceholder).Cast<ViewSheet>();
             FamilySymbol titleBlock = GetTitleblockBasedOnView(view);
             ViewSheet sheet = null;
-
-            foreach(ViewSheet viewSheet in test)
+            
+            foreach (ViewSheet viewSheet in test)
             {
-                if (string.Compare(viewSheet.Name, name) < 5)
+                if (CalcLevenshteinDistance(viewSheet.Name.ToLower(), name.Remove(0,4).ToLower()) <= 1)
                 {
                     sheet = viewSheet;
                     sheet.ConvertToRealSheet(titleBlock.Id);
@@ -322,6 +322,46 @@ namespace RevitMainTool
             {
                 return doc.ActiveView;
             }
+        }
+
+        internal static int CalcLevenshteinDistance(string a, string b)
+        {
+            if (string.IsNullOrEmpty(a) && string.IsNullOrEmpty(b))
+            {
+                return 0;
+            }
+
+            if (string.IsNullOrEmpty(a))
+            {
+                return b.Length;
+            }
+
+            if (string.IsNullOrEmpty(b))
+            {
+                return a.Length;
+            }
+
+            int lengthA = a.Length;
+            int lengthB = b.Length;
+            var distances = new int[lengthA + 1, lengthB + 1];
+
+            for (int i = 0; i <= lengthA; distances[i, 0] = i++) ;
+            for (int j = 0; j <= lengthB; distances[0, j] = j++) ;
+
+            for (int i = 1; i <= lengthA; i++)
+            {
+                for (int j = 1; j <= lengthB; j++)
+                {
+                    int cost = b[j - 1] == a[i - 1] ? 0 : 1;
+
+                    distances[i, j] = Math.Min(
+                        Math.Min(distances[i - 1, j] + 1, distances[i, j - 1] + 1),
+                        distances[i - 1, j - 1] + cost
+                    );
+                }
+            }
+
+            return distances[lengthA, lengthB];
         }
 
 
