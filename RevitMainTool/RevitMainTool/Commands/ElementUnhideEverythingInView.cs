@@ -58,12 +58,8 @@ namespace RevitMainTool
 
                 view.DisableTemporaryViewMode(TemporaryViewMode.RevealHiddenElements);
 
-
                 tx.Commit();
             }
-
-
-            
 
             return Result.Succeeded;
         }

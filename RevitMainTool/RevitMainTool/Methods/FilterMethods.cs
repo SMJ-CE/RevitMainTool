@@ -15,7 +15,7 @@ namespace RevitMainTool.Methods
             var filtersInDoc = new FilteredElementCollector(doc).OfClass(typeof(ParameterFilterElement)).Cast<ParameterFilterElement>();
             var filtersIdInView = view.GetFilters();
 
-            foreach(ElementId filterId in filtersIdInView)
+            foreach (ElementId filterId in filtersIdInView)
             {
                 view.RemoveFilter(filterId);
             }
@@ -31,7 +31,7 @@ namespace RevitMainTool.Methods
             if (ParameterFilterElement.IsNameUnique(doc, filterNameNotCurrentAbbreviation))
             {
                 ICollection<ElementId> builtInCategories = new List<ElementId>
-                    {
+                {
                     new ElementId(BuiltInCategory.OST_DuctAccessory),
                     new ElementId(BuiltInCategory.OST_DuctFitting),
                     new ElementId(BuiltInCategory.OST_DuctInsulations),
@@ -46,7 +46,7 @@ namespace RevitMainTool.Methods
                     new ElementId(BuiltInCategory.OST_PlaceHolderPipes),
                     new ElementId(BuiltInCategory.OST_PipeCurves),
                     new ElementId(BuiltInCategory.OST_PlumbingFixtures)
-                    };
+                };
 
                 FilterRule filterRule = ParameterFilterRuleFactory.CreateNotBeginsWithRule(new ElementId(BuiltInParameter.RBS_DUCT_PIPE_SYSTEM_ABBREVIATION_PARAM), abbreviationString);
                 ElementParameterFilter to = new ElementParameterFilter(filterRule);
@@ -90,7 +90,6 @@ namespace RevitMainTool.Methods
 
             //Apply filter to view and set visibility graphics
             ElementId filterIdNotMech = filter.Id;
-
             view.AddFilter(filterIdNotMech);
             graphicSettings = new OverrideGraphicSettings();
             graphicSettings.SetHalftone(true);
@@ -107,21 +106,21 @@ namespace RevitMainTool.Methods
             if (currentSheetNumber != null)
             {
                 ICollection<ElementId> builtInCategories = new List<ElementId>
-                        {
-                            new ElementId(BuiltInCategory.OST_Sections)
-                        };
+                {
+                    new ElementId(BuiltInCategory.OST_Sections)
+                };
 
                 FilterRule filterRule = ParameterFilterRuleFactory.CreateNotBeginsWithRule(new ElementId(BuiltInParameter.VIEWPORT_SHEET_NUMBER), currentSheetNumber);
                 ElementParameterFilter to = new ElementParameterFilter(filterRule);
                 if (ParameterFilterElement.IsNameUnique(doc, filterNameNotSection))
                 {
-                    
+
                     filter = ParameterFilterElement.Create(doc, filterNameNotSection, builtInCategories, to);
                 }
                 else
                 {
-                    filter.SetElementFilter(to);
                     filter = filtersInDoc.First(x => x.Name == filterNameNotSection);
+                    filter.SetElementFilter(to);
                 }
 
                 //Apply filter to view and set visibility graphics
