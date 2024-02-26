@@ -132,26 +132,31 @@ namespace RevitMainTool.Methods
 
             //________________________________
             //Apply grids and level filter
-            string filterUniqueIDGridsAndLevels = "20e660bd-bcbc-44c5-9406-ea365e080f93-01797d6b";
-            filter = filtersInDoc.First(x => x.UniqueId == filterUniqueIDGridsAndLevels);
+            string filterNameGridsAndLevels = "SMJ Grids & Level Remove";
+            filter = filtersInDoc.FirstOrDefault(x => x.Name == filterNameGridsAndLevels);
 
             //Apply filter to view and set visibility graphics
-            ElementId filterIdGridsAndLevels = filter.Id;
-            view.AddFilter(filterIdGridsAndLevels);
-            view.SetFilterVisibility(filterIdGridsAndLevels, false);
-
+            if(filter != null)
+            {
+                ElementId filterIdGridsAndLevels = filter.Id;
+                view.AddFilter(filterIdGridsAndLevels);
+                view.SetFilterVisibility(filterIdGridsAndLevels, false);
+            }
+            
 
             //________________________________
             //Apply grids and level filter
-            string filterUniqueIDVoids = "07c7e03e-af0d-4eb2-8d5e-1bd5e336fa1f-017a0e74";
-            filter = filtersInDoc.First(x => x.UniqueId == filterUniqueIDVoids);
+            string filterNameVoids = "MC Voids hide";
+            filter = filtersInDoc.FirstOrDefault(x => x.Name == filterNameVoids);
 
             //Apply filter to view and set visibility graphics
-            ElementId filterIdVoidss = filter.Id;
-            view.AddFilter(filterIdVoidss);
-            view.SetFilterVisibility(filterIdVoidss, false);
-
-
+            if(filter != null)
+            {
+                ElementId filterIdVoidss = filter.Id;
+                view.AddFilter(filterIdVoidss);
+                view.SetFilterVisibility(filterIdVoidss, false);
+            }
+            
         }
 
     }

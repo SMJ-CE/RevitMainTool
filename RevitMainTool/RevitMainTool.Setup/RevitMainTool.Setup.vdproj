@@ -5065,15 +5065,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:RevitMainTool"
-        "ProductCode" = "8:{0E751119-8EF9-4958-B4E1-27E0071C9DD9}"
-        "PackageCode" = "8:{B38F20A4-80F7-49D4-9E0E-43F558A8E477}"
+        "ProductCode" = "8:{65631687-861A-445C-8145-6C4390860A0E}"
+        "PackageCode" = "8:{7811E28D-4D1C-4BC2-B529-FE0DD788B21A}"
         "UpgradeCode" = "8:{496E59E3-48F5-4F60-9FFD-3E0AC74FF842}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:0.1.4"
+        "ProductVersion" = "8:0.1.5"
         "Manufacturer" = "8:Vormadal"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -5615,7 +5615,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_9E22B0E4F5EF426FA9759FBA7F33CE53"
             {
-            "SourcePath" = "8:"
+            "SourcePath" = "8:..\\RevitMainTool\\obj\\Release\\RevitMainTool.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_28216ADB9ADE45F5AE4CBB6492CBFE9E"
@@ -5643,7 +5643,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_9EA5314D22194C5DB48A6DC9BFCE6A58"
             {
-            "SourcePath" = "8:"
+            "SourcePath" = "8:..\\RevitMainTool.Configuration\\obj\\Release\\RevitMainTool.Configuration.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_28216ADB9ADE45F5AE4CBB6492CBFE9E"
