@@ -12,6 +12,128 @@ namespace RevitMainTool
 {
     public static class ViewMethods
     {
+
+        public static void SetLocationOnSheet(this Viewport viewport, XYZ location)
+        {
+            Document doc = viewport.Document;
+            ViewSheet viewSheet = doc.GetElement(viewport.SheetId) as ViewSheet;
+            View view = doc.GetElement(viewport.ViewId) as View;
+
+            BoundingBoxXYZ savedBox = view.CropBox;
+            //var test = view.GetCropRegionShapeManager().GetCropShape();
+
+            bool cropBoxActive = view.CropBoxActive;
+            bool cropBoxVisible = view.CropBoxVisible;
+
+            XYZ start = new XYZ(-9999999, -9999999, 0);
+            XYZ End = new XYZ(9999999, 9999999, 0);
+            BoundingBoxXYZ bigBoundingBox = new BoundingBoxXYZ();
+            bigBoundingBox.Min = start;
+            bigBoundingBox.Max = End;
+
+
+            using (var tx = new Transaction(doc))
+            {
+                tx.Start("Make Crop Big");
+
+                view.CropBoxActive = true;
+                view.CropBoxVisible = true;
+                view.CropBox = bigBoundingBox;
+
+                tx.Commit();
+            }
+
+            using (var tx = new Transaction(doc))
+            {
+                tx.Start("SetLocation");
+
+                viewport.SetBoxCenter(location);
+                view.CropBoxActive = cropBoxActive;
+                view.CropBoxVisible = cropBoxVisible;
+                view.CropBox = savedBox;
+
+                tx.Commit();
+            }
+        }
+
+        public static XYZ GetLocationOnSheet(this Viewport viewport)
+        {
+            Document doc = viewport.Document;
+            ViewSheet viewSheet = doc.GetElement(viewport.SheetId) as ViewSheet;
+            View view = doc.GetElement(viewport.ViewId) as View;
+
+            BoundingBoxXYZ savedBox = view.CropBox;
+            //var test = view.GetCropRegionShapeManager().GetCropShape();
+
+            bool cropBoxActive = view.CropBoxActive;
+            bool cropBoxVisible = view.CropBoxVisible;
+
+            XYZ start = new XYZ(-999999, -999999, 0);
+            XYZ End = new XYZ(999999, 999999, 0);
+            BoundingBoxXYZ bigBoundingBox = new BoundingBoxXYZ();
+            bigBoundingBox.Min = start;
+            bigBoundingBox.Max = End;
+
+            using (var tx = new Transaction(doc))
+            {
+                tx.Start("Make Crop Big");
+
+                view.CropBoxActive = true;
+                view.CropBoxVisible = true;
+                view.CropBox = bigBoundingBox;
+
+                tx.Commit();
+            }
+            
+            XYZ brro = viewport.GetBoxCenter();
+
+            using (var tx = new Transaction(doc))
+            {
+                tx.Start("Make Crop Big");
+
+                view.CropBoxActive = cropBoxActive;
+                view.CropBoxVisible = cropBoxVisible;
+                view.CropBox = savedBox;
+
+                tx.Commit();
+            }
+
+            return brro;
+        }
+
+        public static Viewport GetMainPlanViewInSheet(ViewSheet viewSheet)
+        {
+            Document doc = viewSheet.Document;
+            var viewIds = viewSheet.GetAllViewports();
+
+            List<Viewport> viewports = new List<Viewport>();
+
+            foreach (ElementId viewId in viewIds)
+            {
+                Element eleViewport = doc.GetElement(viewId);
+                if (eleViewport is Viewport viewPort)
+                {
+                    Element eleView = doc.GetElement(viewPort.ViewId);
+
+                    if (eleView is ViewPlan)
+                    {
+                        viewports.Add(viewPort);
+                    }
+                }
+            }
+
+            Viewport result = null;
+
+            if (viewports.Count > 0)
+            {
+                Element test = GeneralMethods.GetElementWithBiggestBoundingBox(viewports.Cast<Element>().ToList(), viewSheet);
+
+                result = (Viewport)test;
+            }
+
+            return result;
+        }
+
         public static void AdjustCropToElements(View view, IEnumerable<Element> elements, XYZ border)
         {
 
@@ -153,10 +275,10 @@ namespace RevitMainTool
             var test = new FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Sheets).Where(x => (x as ViewSheet).IsPlaceholder).Cast<ViewSheet>();
             FamilySymbol titleBlock = GetTitleblockBasedOnView(view);
             ViewSheet sheet = null;
-            
+
             foreach (ViewSheet viewSheet in test)
             {
-                if (CalcLevenshteinDistance(viewSheet.Name.ToLower(), name.Remove(0,4).ToLower()) <= 1)
+                if (CalcLevenshteinDistance(viewSheet.Name.ToLower(), name.Remove(0, 4).ToLower()) <= 1)
                 {
                     sheet = viewSheet;
                     sheet.ConvertToRealSheet(titleBlock.Id);

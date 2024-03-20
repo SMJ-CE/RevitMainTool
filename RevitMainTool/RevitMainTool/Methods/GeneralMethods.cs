@@ -10,11 +10,43 @@ using System.Windows;
 using Autodesk.Revit.UI;
 using QuickGraph.Algorithms.ConnectedComponents;
 using QuickGraph;
+using RevitMainTool.Methods;
 
 namespace RevitMainTool
 {
     public static class GeneralMethods
     {
+        public static Element GetElementWithBiggestBoundingBox(List<Element> elements, View view)
+        {
+            IEnumerable<BoundingBoxXYZ> boundingBoxes = elements.Select(x => x.get_BoundingBox(view));
+
+            double largestBoundingBox = 0.0;
+            Element result = null;
+
+            foreach(Element ele in elements)
+            {
+                BoundingBoxXYZ boundBox = ele.get_BoundingBox(view);
+                double currentBoundLength = boundBox.Length();
+                if (largestBoundingBox < currentBoundLength)
+                {
+                    result = ele;
+                    largestBoundingBox = currentBoundLength;
+
+                }
+            }
+
+            return result;
+        }
+
+        public static double Length(this BoundingBoxXYZ boundingBox)
+        {
+            XYZ min = boundingBox.Min;
+            XYZ max = boundingBox.Max;
+
+            return min.GetLength(max);
+        }
+
+
         public static XYZ GetMidpointOfElementByLocation(Location location)
         {
             XYZ hostLocation = null;

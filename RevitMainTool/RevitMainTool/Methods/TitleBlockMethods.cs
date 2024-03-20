@@ -63,36 +63,15 @@ namespace RevitMainTool.Methods
         public static void UpdatePaperSizeAndSMJScale(ViewSheet sheet, Document doc, IEnumerable<Element> titleBlocks)
         {
             var viewElementIds = sheet.GetAllPlacedViews();
-            Parameter SMJScaleParameter = sheet.LookupParameter("Lutfall");
+            Parameter SMJScaleParameter = sheet.LookupParameter("SMJ Scale");
 
-            //if (SMJScaleParameter != null)
-            //{
-            //    if (viewElementIds.Count() > 0)
-            //    {
-            //        HashSet<string> scalesInViewSheet = new HashSet<string>();
 
-            //        foreach (var viewElement in viewElementIds)
-            //        {
-            //            var viewOnSheetElement = doc.GetElement(viewElement);
-
-            //            if (viewOnSheetElement is View viewOnSheet)
-            //            {
-            //                if (viewOnSheet.ViewType != ViewType.Legend && viewOnSheet.ViewType != ViewType.ThreeD && viewOnSheet.ViewType != ViewType.DraftingView)
-            //                {
-            //                    scalesInViewSheet.Add("1:" + viewOnSheet.Scale.ToString());
-            //                }
-            //            }
-            //        }
-
-            //        SMJScaleParameter.Set(string.Join(", ", scalesInViewSheet));
-            //    }
-            //}
-
+            //Join multiple scales together
             if (SMJScaleParameter != null)
             {
                 if (viewElementIds.Count() > 0)
                 {
-                    List<int> scalesInViewSheet = new List<int>();
+                    HashSet<string> scalesInViewSheet = new HashSet<string>();
 
                     foreach (var viewElement in viewElementIds)
                     {
@@ -102,21 +81,45 @@ namespace RevitMainTool.Methods
                         {
                             if (viewOnSheet.ViewType != ViewType.Legend && viewOnSheet.ViewType != ViewType.ThreeD && viewOnSheet.ViewType != ViewType.DraftingView)
                             {
-                                scalesInViewSheet.Add(viewOnSheet.Scale);
+                                scalesInViewSheet.Add("1:" + viewOnSheet.Scale.ToString());
                             }
                         }
                     }
 
-                    if (scalesInViewSheet.Count() > 0)
-                    {
-                        SMJScaleParameter.Set("1:" + scalesInViewSheet.Max().ToString());
-                    }
-
+                    SMJScaleParameter.Set(string.Join(", ", scalesInViewSheet));
                 }
             }
 
+            //Take only the largest scale
+            //if (SMJScaleParameter != null)
+            //{
+            //    if (viewElementIds.Count() > 0)
+            //    {
+            //        List<int> scalesInViewSheet = new List<int>();
 
-            Parameter paperSizeParameter = sheet.LookupParameter("Pappírstødd");
+            //        foreach (var viewElement in viewElementIds)
+            //        {
+            //            var viewOnSheetElement = doc.GetElement(viewElement);
+
+            //            if (viewOnSheetElement is View viewOnSheet)
+            //            {
+            //                if (viewOnSheet.ViewType != ViewType.Legend && viewOnSheet.ViewType != ViewType.ThreeD && viewOnSheet.ViewType != ViewType.DraftingView)
+            //                {
+            //                    scalesInViewSheet.Add(viewOnSheet.Scale);
+            //                }
+            //            }
+            //        }
+
+            //        if (scalesInViewSheet.Count() > 0)
+            //        {
+            //            SMJScaleParameter.Set("1:" + scalesInViewSheet.Max().ToString());
+            //        }
+
+            //    }
+            //}
+
+
+            Parameter paperSizeParameter = sheet.LookupParameter("Paper Size");
 
             if (paperSizeParameter != null)
             {
