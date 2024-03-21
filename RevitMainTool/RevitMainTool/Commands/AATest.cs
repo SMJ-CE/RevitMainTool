@@ -36,7 +36,7 @@ namespace RevitMainTool
             {
                 using (var tx = new TransactionGroup(doc))
                 {
-                    tx.Start("Make Grids and crop the same");
+                    tx.Start("Make Grids and crop the same and place the same on sheet");
 
                     if (GraphicalView is ViewSheet grahpSheet)
                     {
@@ -45,105 +45,133 @@ namespace RevitMainTool
                         GraphicalView = doc.GetElement(GraphicalViewport.ViewId) as View;
                     }
 
-                    var catFilter = new ElementCategoryFilter(BuiltInCategory.OST_Grids);
-                    var allGridsInView = new FilteredElementCollector(doc, GraphicalView.Id).WhereElementIsNotElementType().WherePasses(catFilter);
-                    bool cropViewActive = GraphicalView.CropBoxActive;
-                    CurveLoop curvesOfCrop = null;
-                    bool cropVisible = false;
-                    bool annotationCrop = false;
-
-                    if (cropViewActive)
+                    if(GraphicalView != null)
                     {
-                        if (!GraphicalView.GetCropRegionShapeManager().Split)
+                        var catFilter = new ElementCategoryFilter(BuiltInCategory.OST_Grids);
+                        var allGridsInView = new FilteredElementCollector(doc, GraphicalView.Id).WhereElementIsNotElementType().WherePasses(catFilter);
+                        bool cropViewActive = GraphicalView.CropBoxActive;
+                        CurveLoop curvesOfCrop = null;
+                        bool cropVisible = false;
+                        bool annotationCrop = false;
+
+                        if (cropViewActive)
                         {
-                            curvesOfCrop = GraphicalView.GetCropRegionShapeManager().GetCropShape().First();
-                            cropVisible = GraphicalView.CropBoxVisible;
-                            //annotationCrop = GraphicalView.GetCropRegionShapeManager();
-                        }
-                    }
-
-                    foreach (var eleId in eleIds)
-                    {
-                        Element ele = doc.GetElement(eleId);
-                        View eleView = null;
-
-                        if (ele is ViewSheet viewSheet)
-                        {
-                            Viewport viewTest = ViewMethods.GetMainPlanViewInSheet(viewSheet);
-                            eleView = doc.GetElement(viewTest.ViewId) as View;
-
-                            viewTest.SetLocationOnSheet(locationOnSheet);
-
-
-                        }
-                        else if (ele is View view)
-                        {
-                            eleView = view;
-                        }
-
-                        if (eleView != null)
-                        {
-                            if (curvesOfCrop != null)
+                            if (!GraphicalView.GetCropRegionShapeManager().Split)
                             {
-                                using (var tra = new Transaction(doc))
-                                {
-                                    tra.Start("Make Crop the Same");
-
-                                    eleView.CropBoxActive = true;
-                                    eleView.GetCropRegionShapeManager().SetCropShape(curvesOfCrop);
-                                    eleView.CropBoxVisible = cropVisible;
-
-                                    tra.Commit();
-                                }
+                                curvesOfCrop = GraphicalView.GetCropRegionShapeManager().GetCropShape().First();
+                                cropVisible = GraphicalView.CropBoxVisible;
+                                //annotationCrop = GraphicalView.GetCropRegionShapeManager();
                             }
+                        }
 
-                            foreach (Element gridElement in allGridsInView)
+                        foreach (var eleId in eleIds)
+                        {
+                            Element ele = doc.GetElement(eleId);
+                            View eleView = null;
+
+                            if (ele is ViewSheet viewSheet)
                             {
-                                if (gridElement is Grid grid)
+
+                                Viewport viewTest = ViewMethods.GetMainPlanViewInSheet(viewSheet);
+
+                                if(viewTest != null)
                                 {
-                                    using (var tra = new Transaction(doc))
+                                    bool isViewPinned = viewTest.Pinned;
+
+                                    if (isViewPinned)
                                     {
-                                        tra.Start("Make grids 2D");
+                                        using (var tra = new Transaction(doc))
+                                        {
+                                            tra.Start("Unpin Viewport");
 
-                                        grid.SetDatumExtentType(DatumEnds.End0, eleView, DatumExtentType.ViewSpecific);
-                                        grid.SetDatumExtentType(DatumEnds.End1, eleView, DatumExtentType.ViewSpecific);
+                                            viewTest.Pinned = false;
 
-                                        tra.Commit();
+                                            tra.Commit();
+                                        }
                                     }
 
-                                    var test2 = grid.GetCurvesInView(DatumExtentType.ViewSpecific, GraphicalView);
-                                    Curve newCurve = grid.GetCurvesInView(DatumExtentType.ViewSpecific, GraphicalView).First();
+                                    eleView = doc.GetElement(viewTest.ViewId) as View;
 
-                                    var origCurve = grid.GetCurvesInView(DatumExtentType.ViewSpecific, eleView).First() as Line;
-                                    var origDirection = origCurve.Direction;
-
-                                    var newCurveStartPoint = newCurve.GetEndPoint(0);
-                                    var newCurveStartHelperPoint = origDirection.ConvertToUV().RotateVector(90).Add(newCurveStartPoint.ConvertToUV());
-
-                                    var newCurveEndPoint = newCurve.GetEndPoint(1);
-                                    var newCurveEndHelperPoint = origDirection.ConvertToUV().RotateVector(90).Add(newCurveEndPoint.ConvertToUV());
-
-                                    var origCurveStartPoint = origCurve.GetEndPoint(0);
-                                    var origCurveEndPoint = origCurve.GetEndPoint(1);
-
-                                    UV intersectionStart = XYZMethods.IntersectionOfTwoLines(origCurveStartPoint.ConvertToUV(), origCurveEndPoint.ConvertToUV(), newCurveStartPoint.ConvertToUV(), newCurveStartHelperPoint);
-                                    UV intersectionEnd = XYZMethods.IntersectionOfTwoLines(origCurveStartPoint.ConvertToUV(), origCurveEndPoint.ConvertToUV(), newCurveEndPoint.ConvertToUV(), newCurveEndHelperPoint);
+                                    viewTest.SetLocationOnSheet(locationOnSheet);
 
                                     using (var tra = new Transaction(doc))
                                     {
-                                        tra.Start("Make Grids the same");
-                                        var theNewLine = Line.CreateBound(intersectionStart.ConvertToXYZ(origCurveStartPoint.Z), intersectionEnd.ConvertToXYZ(origCurveEndPoint.Z));
+                                        tra.Start("Pin Viewport");
 
-                                        grid.SetCurveInView(DatumExtentType.ViewSpecific, eleView, theNewLine);
+                                        viewTest.Pinned = true;
+
                                         tra.Commit();
                                     }
+                                }
+                            }
+                            else if (ele is View view)
+                            {
+                                eleView = view;
+                            }
+
+                            if (eleView != null)
+                            {
+                                if (curvesOfCrop != null)
+                                {
+                                    using (var tra = new Transaction(doc))
+                                    {
+                                        tra.Start("Make Crop the Same");
+
+                                        eleView.CropBoxActive = true;
+                                        eleView.GetCropRegionShapeManager().SetCropShape(curvesOfCrop);
+                                        eleView.CropBoxVisible = cropVisible;
+
+                                        tra.Commit();
+                                    }
+                                }
+
+                                foreach (Element gridElement in allGridsInView)
+                                {
+                                    if (gridElement is Grid grid)
+                                    {
+                                        using (var tra = new Transaction(doc))
+                                        {
+                                            tra.Start("Make grids 2D");
+
+                                            grid.SetDatumExtentType(DatumEnds.End0, eleView, DatumExtentType.ViewSpecific);
+                                            grid.SetDatumExtentType(DatumEnds.End1, eleView, DatumExtentType.ViewSpecific);
+
+                                            tra.Commit();
+                                        }
+
+                                        var test2 = grid.GetCurvesInView(DatumExtentType.ViewSpecific, GraphicalView);
+                                        Curve newCurve = grid.GetCurvesInView(DatumExtentType.ViewSpecific, GraphicalView).First();
+
+                                        var origCurve = grid.GetCurvesInView(DatumExtentType.ViewSpecific, eleView).First() as Line;
+                                        var origDirection = origCurve.Direction;
+
+                                        var newCurveStartPoint = newCurve.GetEndPoint(0);
+                                        var newCurveStartHelperPoint = origDirection.ConvertToUV().RotateVector(90).Add(newCurveStartPoint.ConvertToUV());
+
+                                        var newCurveEndPoint = newCurve.GetEndPoint(1);
+                                        var newCurveEndHelperPoint = origDirection.ConvertToUV().RotateVector(90).Add(newCurveEndPoint.ConvertToUV());
+
+                                        var origCurveStartPoint = origCurve.GetEndPoint(0);
+                                        var origCurveEndPoint = origCurve.GetEndPoint(1);
+
+                                        UV intersectionStart = XYZMethods.IntersectionOfTwoLines(origCurveStartPoint.ConvertToUV(), origCurveEndPoint.ConvertToUV(), newCurveStartPoint.ConvertToUV(), newCurveStartHelperPoint);
+                                        UV intersectionEnd = XYZMethods.IntersectionOfTwoLines(origCurveStartPoint.ConvertToUV(), origCurveEndPoint.ConvertToUV(), newCurveEndPoint.ConvertToUV(), newCurveEndHelperPoint);
+
+                                        using (var tra = new Transaction(doc))
+                                        {
+                                            tra.Start("Make Grids the same");
+                                            var theNewLine = Line.CreateBound(intersectionStart.ConvertToXYZ(origCurveStartPoint.Z), intersectionEnd.ConvertToXYZ(origCurveEndPoint.Z));
+
+                                            grid.SetCurveInView(DatumExtentType.ViewSpecific, eleView, theNewLine);
+                                            tra.Commit();
+                                        }
 
 
+                                    }
                                 }
                             }
                         }
                     }
-
                     tx.Assimilate();
                 }
 

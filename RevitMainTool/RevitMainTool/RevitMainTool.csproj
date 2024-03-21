@@ -88,6 +88,7 @@
   <ItemGroup>
     <Compile Include="App.cs" />
     <Compile Include="ButtonBuilder.cs" />
+    <Compile Include="Commands\AAMoreTesty.cs" />
     <Compile Include="Commands\FlipGridsThreeD.cs" />
     <Compile Include="Commands\MakeGridsTwoD.cs" />
     <Compile Include="Commands\AlignTagsCenter.cs" />

@@ -19,18 +19,41 @@ namespace RevitMainTool
             ViewSheet viewSheet = doc.GetElement(viewport.SheetId) as ViewSheet;
             View view = doc.GetElement(viewport.ViewId) as View;
 
-            BoundingBoxXYZ savedBox = view.CropBox;
-            //var test = view.GetCropRegionShapeManager().GetCropShape();
-
             bool cropBoxActive = view.CropBoxActive;
             bool cropBoxVisible = view.CropBoxVisible;
+
+            if (!cropBoxActive)
+            {
+                using (var tx = new Transaction(doc))
+                {
+                    tx.Start("SetLocation");
+
+                    view.CropBoxActive = true;
+
+                    tx.Commit();
+                }
+            }
+
+            CurveLoop savedBox = view.GetCropRegionShapeManager().GetCropShape().First();
+            var isNotRectangular = view.GetCropRegionShapeManager().ShapeSet;
+
+            if (isNotRectangular)
+            {
+                using (var tx = new Transaction(doc))
+                {
+                    tx.Start("SetLocation");
+
+                    view.GetCropRegionShapeManager().RemoveCropRegionShape();
+
+                    tx.Commit();
+                }
+            }
 
             XYZ start = new XYZ(-9999999, -9999999, 0);
             XYZ End = new XYZ(9999999, 9999999, 0);
             BoundingBoxXYZ bigBoundingBox = new BoundingBoxXYZ();
             bigBoundingBox.Min = start;
             bigBoundingBox.Max = End;
-
 
             using (var tx = new Transaction(doc))
             {
@@ -50,7 +73,7 @@ namespace RevitMainTool
                 viewport.SetBoxCenter(location);
                 view.CropBoxActive = cropBoxActive;
                 view.CropBoxVisible = cropBoxVisible;
-                view.CropBox = savedBox;
+                view.GetCropRegionShapeManager().SetCropShape(savedBox);
 
                 tx.Commit();
             }
@@ -62,11 +85,35 @@ namespace RevitMainTool
             ViewSheet viewSheet = doc.GetElement(viewport.SheetId) as ViewSheet;
             View view = doc.GetElement(viewport.ViewId) as View;
 
-            BoundingBoxXYZ savedBox = view.CropBox;
-            //var test = view.GetCropRegionShapeManager().GetCropShape();
-
             bool cropBoxActive = view.CropBoxActive;
             bool cropBoxVisible = view.CropBoxVisible;
+
+            if (!cropBoxActive)
+            {
+                using (var tx = new Transaction(doc))
+                {
+                    tx.Start("SetLocation");
+
+                    view.CropBoxActive = true;
+
+                    tx.Commit();
+                }
+            }
+
+            CurveLoop savedBox = view.GetCropRegionShapeManager().GetCropShape().First();
+            bool isNotRectangular = view.GetCropRegionShapeManager().ShapeSet;
+
+            if (isNotRectangular)
+            {
+                using (var tx = new Transaction(doc))
+                {
+                    tx.Start("SetLocation");
+
+                    view.GetCropRegionShapeManager().RemoveCropRegionShape();
+
+                    tx.Commit();
+                }
+            }
 
             XYZ start = new XYZ(-999999, -999999, 0);
             XYZ End = new XYZ(999999, 999999, 0);
@@ -93,7 +140,7 @@ namespace RevitMainTool
 
                 view.CropBoxActive = cropBoxActive;
                 view.CropBoxVisible = cropBoxVisible;
-                view.CropBox = savedBox;
+                view.GetCropRegionShapeManager().SetCropShape(savedBox);
 
                 tx.Commit();
             }
