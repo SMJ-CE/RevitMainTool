@@ -88,6 +88,7 @@
   <ItemGroup>
     <Compile Include="App.cs" />
     <Compile Include="ButtonBuilder.cs" />
+    <Compile Include="Commands\CheckCoordinationReview.cs" />
     <Compile Include="Commands\AAMoreTesty.cs" />
     <Compile Include="Commands\FlipGridsThreeD.cs" />
     <Compile Include="Commands\MakeGridsTwoD.cs" />
@@ -108,7 +109,7 @@
     <Compile Include="Commands\Tester4.cs" />
     <Compile Include="Commands\ElementUnhideEverythingInView.cs" />
     <Compile Include="Commands\CreateOrUpdateSpaceFromLinkedFile.cs" />
-    <Compile Include="Commands\UpdatePaperAndScaleParameterOnCurrent.cs" />
+    <Compile Include="Commands\UpdatePaperSizeAndScaleParameterOnCurrent.cs" />
     <Compile Include="Commands\UpdatePaperSizesAndSMJScale.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="Methods\FilterMethods.cs" />

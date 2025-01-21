@@ -7,6 +7,8 @@ namespace RevitMainTool.Configuration
 {
     internal class ManifestFactory
     {
+
+
         public void Create(string directory)
         {
             //create a new addin manifest
@@ -30,7 +32,7 @@ namespace RevitMainTool.Configuration
             }
 
             //TODO find a way to handle multiple versions of Revit
-            var product = products.Where(x => (int)x.Version == 13).FirstOrDefault();
+            var product = products.Where(x => (int)x.Version == 12).FirstOrDefault();
 
             if (product == null)
             {

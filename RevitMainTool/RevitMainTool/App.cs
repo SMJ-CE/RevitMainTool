@@ -108,7 +108,7 @@ namespace RevitMainTool
                 .Text("Create Filters\nFrom Pipe")
                 .Build(panelHSKV);
 
-            new ButtonBuilder("UpdatePaperAndScaleParameterOnCurrent", typeof(UpdatePaperAndScaleParameterOnCurrent))
+            new ButtonBuilder("UpdatePaperAndScaleParameterOnCurrent", typeof(UpdatePaperSizeAndScaleParameterOnCurrent))
                 .ImagePath($"{Global.AssemblyDirectory}\\Pictures\\Settings.png")
                 .Text("Update Current\nSheet Parameter")
                 .Build(panelHSKV);
